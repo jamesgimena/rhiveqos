@@ -4,16 +4,16 @@ import { useMockDB } from '../contexts/MockDatabaseContext';
 import { useNavigation } from '../contexts/NavigationContext';
 import { PAGE_GROUPS } from '../constants';
 import { PageGroup } from '../types';
-import { 
-    RhiveLogo, 
-    HomeIcon, 
-    ChartBarIcon, 
-    UserIcon, 
-    CalendarDaysIcon, 
-    MagnifyingGlassIcon, 
-    CalculatorIcon, 
-    PriceTagIcon, 
-    DocumentTextIcon, 
+import {
+    RhiveLogo,
+    HomeIcon,
+    ChartBarIcon,
+    UserIcon,
+    CalendarDaysIcon,
+    MagnifyingGlassIcon,
+    CalculatorIcon,
+    PriceTagIcon,
+    DocumentTextIcon,
     ListBulletIcon,
     BuildingStorefrontIcon,
     MapPinIcon,
@@ -25,7 +25,8 @@ import {
     ShieldCheckIcon,
     SearchIcon,
     ClockIcon,
-    KeyIcon
+    KeyIcon,
+    SparklesIcon
 } from './icons';
 import { cn } from '../lib/utils';
 
@@ -60,22 +61,23 @@ const getIconForPage = (id: string) => {
     if (id === 'E-23') return <PriceTagIcon className="h-5 w-5" />;
     if (id === 'E-27' || id === 'P-12') return <CalculatorIcon className="h-5 w-5" />;
     if (id === 'E-38') return <BoltIcon className="h-5 w-5" />;
+    if (id === 'E-39') return <SparklesIcon className="h-5 w-5" />;
     if (id === 'E-29') return <ShieldCheckIcon className="h-5 w-5" />;
     if (id === 'E-32') return <WrenchIcon className="h-5 w-5" />;
     if (id === 'E-34') return <CurrencyDollarIcon className="h-5 w-5" />;
-    
+
     // CUSTOMER
     if (id === 'C-01') return <HomeIcon className="h-5 w-5" />;
     if (id === 'C-02') return <ListBulletIcon className="h-5 w-5" />;
     if (id === 'C-03') return <BriefcaseIcon className="h-5 w-5" />;
     if (id.startsWith('C-')) return <UserIcon className="h-5 w-5" />;
-    
+
     // CONTRACTOR
     if (id === 'CO-01') return <HomeIcon className="h-5 w-5" />;
     if (id === 'CO-06') return <ListBulletIcon className="h-5 w-5" />;
     if (id === 'CO-08') return <MapPinIcon className="h-5 w-5" />;
     if (id.startsWith('CO-')) return <BuildingStorefrontIcon className="h-5 w-5" />;
-    
+
     // SUPPLIER
     if (id === 'S-04') return <UserIcon className="h-5 w-5" />;
     if (id.startsWith('S-')) return <TruckIcon className="h-5 w-5" />;
@@ -95,7 +97,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
 
     // Filter groups based on user role
     const sourceGroups = pageGroups || PAGE_GROUPS;
-    const userGroups = sourceGroups.filter(group => 
+    const userGroups = sourceGroups.filter(group =>
         group.userType === 'All' || group.userType === currentUser.role
     );
 
@@ -144,7 +146,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
                         <p className="text-xs text-[#ec028b] truncate">{currentUser.role}</p>
                     </div>
                 </div>
-                <button 
+                <button
                     onClick={logout}
                     className="w-full py-2 px-4 bg-gray-900 hover:bg-red-900/20 border border-gray-700 hover:border-red-500/50 rounded-lg text-gray-400 hover:text-red-400 text-sm transition-all"
                 >

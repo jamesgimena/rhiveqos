@@ -89,6 +89,7 @@ export const PAGE_GROUPS: PageGroup[] = [
             { id: 'E-36', name: 'COMPLETED STAGE PAGE', userType: 'Employee' },
             { id: 'E-37', name: 'PAST CUSTOMER STAGE PAGE', userType: 'Employee' },
             { id: 'E-38', name: 'WEATHER GUIDE WIDGET', userType: 'Employee' },
+            { id: 'E-39', name: 'BRADING', userType: 'Employee' },
         ]
     },
     {

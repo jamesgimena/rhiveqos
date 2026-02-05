@@ -43,6 +43,7 @@ import SupplierHomepage from './pages/SupplierHomepage'; // S-01
 import SupplierProfilePage from './pages/SupplierProfilePage'; // S-04
 import CustomerTrackerPage from './pages/CustomerTrackerPage'; // C-Tracker
 import SimulationGuidePage from './pages/SimulationGuidePage'; // (Simulation)
+import RHIVEBrandingPage from './pages/RHIVEBrandingPage'; // E-39
 
 // Specific stage pages
 import LeadPage from './pages/LeadPage'; // E-26
@@ -126,6 +127,7 @@ export const pageComponentMap: Record<string, React.FC> = {
   'E-36': CompletedPage,
   'E-37': PastCustomerPage,
   'E-38': WeatherGuideWidgetPage,
+  'E-39': RHIVEBrandingPage,
 
   // Customer
   'C-01': CustomerHomepage,

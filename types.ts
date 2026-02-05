@@ -1,4 +1,14 @@
 
+
+// PlexusShape types
+export interface Dot {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  radius: number;
+}
+
 export interface Place {
   address: string;
   latitude: number;
@@ -157,72 +167,72 @@ export interface Pricing {
 export type UserType = 'Employee' | 'Customer' | 'Contractor' | 'Supplier' | 'Public';
 
 export interface User {
-    id: string;
-    name: string;
-    role: UserType;
-    email?: string;
-    phone?: string;
-    avatarUrl?: string;
+  id: string;
+  name: string;
+  role: UserType;
+  email?: string;
+  phone?: string;
+  avatarUrl?: string;
 }
 
 export interface Project {
-    _id: string;
-    name: string;
-    property_id: string;
-    account_id: string;
-    project_type: 'Residential' | 'Commercial' | 'Government';
-    current_stage: string;
-    status: string;
-    last_updated?: string;
-    assigned_contractor_id?: string;
-    quote?: {
-        total: number;
-        status: 'Draft' | 'Sent' | 'Approved' | 'Rejected';
-        items: { name: string; cost: number }[];
-    };
-    compliance?: {
-        solicitation_num: string;
-        wage_determination: string;
-        certified_payroll_status: boolean;
-    };
+  _id: string;
+  name: string;
+  property_id: string;
+  account_id: string;
+  project_type: 'Residential' | 'Commercial' | 'Government';
+  current_stage: string;
+  status: string;
+  last_updated?: string;
+  assigned_contractor_id?: string;
+  quote?: {
+    total: number;
+    status: 'Draft' | 'Sent' | 'Approved' | 'Rejected';
+    items: { name: string; cost: number }[];
+  };
+  compliance?: {
+    solicitation_num: string;
+    wage_determination: string;
+    certified_payroll_status: boolean;
+  };
 }
 
 export interface Property {
-    _id: string;
-    address_full: string;
-    owner_id: string;
-    type: 'Residential' | 'Commercial' | 'Government';
-    coordinates: { lat: number; lng: number };
-    features: string[];
+  _id: string;
+  address_full: string;
+  owner_id: string;
+  type: 'Residential' | 'Commercial' | 'Government';
+  coordinates: { lat: number; lng: number };
+  features: string[];
 }
 
-export type ProjectStage = 
-    | 'Lead' 
-    | 'Estimate' 
-    | 'Quote' 
-    | 'Sign & Verify' 
-    | 'Schedule' 
-    | 'Pre-Installation' 
-    | 'Install' 
-    | 'Punch List' 
-    | 'Invoicing' 
-    | 'Completed' 
-    | 'Past Customer';
+export type ProjectStage =
+  | 'Lead'
+  | 'Estimate'
+  | 'Quote'
+  | 'Sign & Verify'
+  | 'Schedule'
+  | 'Pre-Installation'
+  | 'Install'
+  | 'Punch List'
+  | 'Invoicing'
+  | 'Completed'
+  | 'Past Customer';
 
 export const PROJECT_STAGES_ORDER: ProjectStage[] = [
-    'Lead', 'Estimate', 'Quote', 'Sign & Verify', 'Schedule', 'Pre-Installation', 'Install', 'Punch List', 'Invoicing', 'Completed', 'Past Customer'
+  'Lead', 'Estimate', 'Quote', 'Sign & Verify', 'Schedule', 'Pre-Installation', 'Install', 'Punch List', 'Invoicing', 'Completed', 'Past Customer'
 ];
 
 export interface Page {
-    id: string;
-    name: string;
-    userType: UserType | 'All';
-    description?: string;
+  id: string;
+  name: string;
+  userType: UserType | 'All';
+  description?: string;
 }
 
 export interface PageGroup {
-    userType: UserType | 'All';
-    pages: Page[];
+  userType: UserType | 'All';
+  pages: Page[];
 }
 
 // New Types for Estimates
@@ -233,21 +243,21 @@ export interface Point3D {
 }
 
 export interface RoofSegment {
-    pitchDegrees: number;
-    azimuthDegrees: number;
-    stats: {
-        areaMeters: number;
-    };
-    vertices: Point3D[];
+  pitchDegrees: number;
+  azimuthDegrees: number;
+  stats: {
+    areaMeters: number;
+  };
+  vertices: Point3D[];
 }
 
 export interface SolarApiData {
-    solarPotential: {
-        wholeRoofStats: {
-            areaMeters: number;
-        };
-        roofSegmentStats: RoofSegment[];
+  solarPotential: {
+    wholeRoofStats: {
+      areaMeters: number;
     };
+    roofSegmentStats: RoofSegment[];
+  };
 }
 
 export interface Edge {
@@ -279,21 +289,21 @@ export interface RoofReport {
     dripEdge: number;
   };
   pitchAnalysis: {
-      pitch: number;
-      areaSqFt: number;
+    pitch: number;
+    areaSqFt: number;
   }[];
 }
 
 export interface Contact {
-    id: string;
-    firstName: string;
-    lastName: string;
-    phone: string;
-    email: string;
-    role: string;
-    isPrimary: boolean;
-    existingUserId?: string; 
-    affiliations: string[];
-    responsibilities: string[];
-    preferredContactMethod?: 'Phone' | 'Text' | 'Email';
+  id: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  role: string;
+  isPrimary: boolean;
+  existingUserId?: string;
+  affiliations: string[];
+  responsibilities: string[];
+  preferredContactMethod?: 'Phone' | 'Text' | 'Email';
 }

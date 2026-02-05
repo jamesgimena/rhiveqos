@@ -77,6 +77,21 @@
       /* Hide scrollbars but keep functionality */
       .scrollbar-hide::-webkit-scrollbar { display: none; }
       .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+      
+      /* Custom Scrollbar Styling (Theme-aware) */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--scrollbar-track, #000000);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--scrollbar-thumb, #333333);
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #ec028b; /* Rhive Pink on hover */
+      }
     </style>
     <script>
       window.googleMapsApiLoaded = false;
