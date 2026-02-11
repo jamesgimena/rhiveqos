@@ -45,6 +45,7 @@ import { calculateEstimate } from '../lib/calculations';
 import { INITIAL_SURVEY_STATE } from '../lib/constants';
 import { WeatherReport } from '../components/WeatherReport';
 import type { User, BuildingData, CalculationResult, SurveyState, Contact, ProjectStage } from '../types';
+import { createProject as createProjectApi } from '../lib/api';
 
 const MAPS_API_KEY = 'AIzaSyAyDim_1uOJy6rS_GZ-EwNKmJyCrvSvqRA';
 
@@ -714,11 +715,68 @@ const CustomerInputPage: React.FC = () => {
         }
     }, [projectCategory, contacts, propertyData, companyData.parentCompany, isBillingConfirmed]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (contacts.length === 0) return alert("Please add at least one contact.");
         const primary = contacts.find(c => c.isPrimary) || contacts[0];
         const projNameStr = isCommercialOrGov ? (companyData.propertyName || propertyData.address) : `${primary.lastName} Residence`;
+
+        try {
+            await createProjectApi({
+                userId: primary.existingUserId || 'U-NEW',
+                name: projNameStr,
+                type: projectCategory,
+                property: {
+                    address: propertyData.address,
+                    city: propertyData.city,
+                    state: propertyData.state,
+                    zip: propertyData.zip,
+                    latitude: propertyData.latitude,
+                    longitude: propertyData.longitude
+                },
+                organization: (companyData.parentCompany || companyData.propertyName) ? {
+                    parentCompany: companyData.parentCompany,
+                    propertyName: companyData.propertyName
+                } : undefined,
+                insurance: isInsurance ? {
+                    isClaim: true,
+                    carrier: insuranceInfo.carrier,
+                    status: insuranceStatus,
+                    claimNumber: insuranceInfo.claimNumber,
+                    deductible: insuranceInfo.deductible,
+                    dateOfLoss: insuranceInfo.dateOfLoss,
+                    damageType: insuranceInfo.damageType
+                } : undefined,
+                billing: {
+                    name: billToName || 'Same as Property',
+                    address: billingData
+                },
+                contacts: contacts.map(c => ({
+                    firstName: c.firstName,
+                    lastName: c.lastName,
+                    phone: c.phone,
+                    email: c.email,
+                    role: c.role,
+                    isPrimary: c.isPrimary || false,
+                    preferredContactMethod: c.preferredContactMethod,
+                    responsibilities: c.responsibilities || [],
+                    affiliations: c.affiliations || []
+                })),
+                details: {
+                    purchaseIntent: purchaseIntent,
+                    scopeType: scopeType,
+                    activeLeak: repairDetails.activeLeak,
+                    isOld: repairDetails.isOld,
+                    hasPhotos: repairDetails.hasPhotos,
+                    scheduledInspection: scheduledDetails || undefined
+                }
+            });
+            console.log("✅ Project successfully saved to database!");
+        } catch (error) {
+            console.error("❌ Failed to save project to database:", error);
+            alert(`Failed to save to Firebase: ${error instanceof Error ? error.message : 'Unknown error'}. Check browser console for details.`);
+        }
+
         createProject(projNameStr, projectCategory, propertyData.address, primary.existingUserId || 'U-NEW');
         setActivePageId('E-18');
     };
