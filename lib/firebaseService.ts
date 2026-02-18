@@ -20,7 +20,8 @@ import {
     orderBy,
     limit,
     DocumentData,
-    Timestamp
+    Timestamp,
+    onSnapshot
 } from 'firebase/firestore';
 import {
     ref,
@@ -78,6 +79,14 @@ export const firestoreService = {
             console.error(`Error getting ${collectionName}:`, error);
             return { success: false, error: error.message };
         }
+    },
+
+    subscribeToDocuments: (collectionName: string, callback: (data: any[]) => void, sortField = 'created_at') => {
+        const q = query(collection(db, collectionName), orderBy(sortField, 'desc'));
+        return onSnapshot(q, (snapshot) => {
+            const data = snapshot.docs.map(mapDoc);
+            callback(data);
+        });
     },
 
     getDocument: async (collectionName: string, id: string) => {
@@ -138,8 +147,9 @@ const mapProjectToSnakeCase = (input: ProjectInput) => ({
 });
 
 export const projectService = {
-    getAll: () => firestoreService.getAllDocuments('projects'),
-    getById: (id: string) => firestoreService.getDocument('projects', id),
+    getAll: () => firestoreService.getAllDocuments('project'),
+    subscribe: (callback: (data: any[]) => void) => firestoreService.subscribeToDocuments('project', callback),
+    getById: (id: string) => firestoreService.getDocument('project', id),
 
     // Creates Project and related sub-collections automatically
     createFullProject: async (input: ProjectInput) => {
@@ -148,7 +158,7 @@ export const projectService = {
             const projectData = JSON.parse(JSON.stringify(mapProjectToSnakeCase(input)));
 
             // AUTO-CREATES 'projects' collection if missing
-            const projectResult = await firestoreService.addDocument('projects', projectData);
+            const projectResult = await firestoreService.addDocument('project', projectData);
             if (!projectResult.success) throw new Error(projectResult.error);
             const projectId = projectResult.id;
 
@@ -177,7 +187,7 @@ export const projectService = {
 
     getFullProject: async (id: string) => {
         try {
-            const projectRes = await firestoreService.getDocument('projects', id);
+            const projectRes = await firestoreService.getDocument('project', id);
             if (!projectRes.success) throw new Error(projectRes.error);
             const project = projectRes.data;
 
@@ -247,7 +257,7 @@ export const dashboardService = {
     getStats: async () => {
         try {
             const [projects, contacts, estimates] = await Promise.all([
-                getDocs(collection(db, 'projects')),
+                getDocs(collection(db, 'project')),
                 getDocs(collection(db, 'contacts')),
                 getDocs(collection(db, 'estimates'))
             ]);
@@ -266,7 +276,7 @@ export const dashboardService = {
     },
     getRecentActivity: async (limitCount = 10) => {
         try {
-            const q = query(collection(db, 'projects'), orderBy('created_at', 'desc'), limit(limitCount));
+            const q = query(collection(db, 'project'), orderBy('created_at', 'desc'), limit(limitCount));
             const snap = await getDocs(q);
             const activities = snap.docs.map(d => ({
                 id: d.id,
@@ -285,7 +295,7 @@ export const searchService = {
     searchProjects: async (term: string) => {
         try {
             const q = query(
-                collection(db, 'projects'),
+                collection(db, 'project'),
                 where('name', '>=', term),
                 where('name', '<=', term + '\uf8ff')
             );
