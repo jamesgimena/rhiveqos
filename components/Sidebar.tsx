@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { useMockDB } from '../contexts/MockDatabaseContext';
 import { useNavigation } from '../contexts/NavigationContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { PAGE_GROUPS } from '../constants';
 import { PageGroup } from '../types';
 import {
@@ -43,6 +43,8 @@ const getIconForPage = (id: string) => {
     if (id === 'P-10') return <BoltIcon className="h-5 w-5" />;
     if (id === 'P-11') return <DocumentTextIcon className="h-5 w-5" />;
     if (id === 'P-12') return <CalculatorIcon className="h-5 w-5" />;
+    if (id === 'P-00') return <SparklesIcon className="h-5 w-5" />;
+    if (id === 'P-00a') return <BoltIcon className="h-5 w-5" />;
 
     // ADMIN (A-Series)
     if (id.startsWith('A-')) return <ShieldCheckIcon className="h-5 w-5" />;
@@ -92,6 +94,8 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
     const { currentUser, logout } = useMockDB();
     const { activePageId, setActivePageId } = useNavigation();
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     if (!currentUser) return null;
 
@@ -102,9 +106,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
     );
 
     return (
-        <aside className="w-64 bg-black/80 border-r border-gray-800 backdrop-blur-md flex flex-col flex-shrink-0 h-full relative z-50">
-            <div className="p-6 border-b border-gray-800 flex items-center justify-center">
-                <RhiveLogo className="h-8" />
+        <aside className={cn(
+            "w-64 border-r backdrop-blur-md flex flex-col flex-shrink-0 h-full relative z-50 transition-colors duration-500",
+            isDark ? "bg-black/80 border-white/5" : "bg-white/80 border-black/5"
+        )}>
+            <div className={cn("p-6 border-b flex items-center justify-center transition-colors duration-500", isDark ? "border-white/5" : "border-black/5")}>
+                <RhiveLogo className={cn("h-8 transition-colors duration-500", isDark ? "text-white" : "text-black")} />
             </div>
 
             <div className="flex-1 overflow-y-auto py-4 scrollbar-hide">
@@ -136,13 +143,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
                 ))}
             </div>
 
-            <div className="p-4 border-t border-gray-800 bg-black/40">
+            <div className={cn("p-4 border-t transition-colors duration-500", isDark ? "border-white/5 bg-black/40" : "border-black/5 bg-white/40")}>
                 <div className="flex items-center mb-4 px-2">
-                    <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-white font-bold text-xs border border-gray-600">
+                    <div className={cn("w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs border transition-colors", isDark ? "bg-gray-800 text-white border-gray-700" : "bg-gray-100 text-black border-gray-200")}>
                         {currentUser.name.charAt(0)}
                     </div>
                     <div className="ml-3 overflow-hidden">
-                        <p className="text-sm font-medium text-white truncate">{currentUser.name}</p>
+                        <p className={cn("text-sm font-medium truncate transition-colors", isDark ? "text-white" : "text-black")}>{currentUser.name}</p>
                         <p className="text-xs text-[#ec028b] truncate">{currentUser.role}</p>
                     </div>
                 </div>

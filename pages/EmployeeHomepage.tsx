@@ -3,49 +3,51 @@ import React, { useState, useEffect, useRef } from 'react';
 import PageContainer from '../components/PageContainer';
 import Card from '../components/Card';
 import Button from '../components/Button';
-import { 
-    BriefcaseIcon, 
-    CalendarDaysIcon, 
-    ListBulletIcon, 
-    UserIcon, 
+import {
+    BriefcaseIcon,
+    CalendarDaysIcon,
+    ListBulletIcon,
+    UserIcon,
     MagnifyingGlassIcon,
     ChatBubbleLeftRightIcon,
     DocumentDuplicateIcon,
     DocumentTextIcon,
-    BoltIcon
+    BoltIcon,
+    CheckIcon
 } from '../components/icons';
 import { PAGE_GROUPS } from '../constants';
 import { useNavigation } from '../contexts/NavigationContext';
 import { useMockDB } from '../contexts/MockDatabaseContext';
+import { cn } from '../lib/utils';
 
 // Compact Session Widget
 const SessionWidget = () => {
     const { currentUser } = useMockDB();
     const { setActivePageId } = useNavigation();
-    
+
     return (
         <div className="bg-gray-900/60 border border-gray-700/50 rounded-xl p-4 flex items-center justify-between backdrop-blur-sm mb-6 shadow-lg">
-             <div className="flex items-center">
-                 <div className="relative">
-                    <img src={currentUser?.avatarUrl || "https://i.pravatar.cc/150?u=employee"} alt="User" className="w-12 h-12 rounded-full border border-[#ec028b]"/>
+            <div className="flex items-center">
+                <div className="relative">
+                    <img src={currentUser?.avatarUrl || "https://i.pravatar.cc/150?u=employee"} alt="User" className="w-12 h-12 rounded-full border border-[#ec028b]" />
                     <div className="absolute bottom-0 right-0 w-3 h-3 bg-black border border-[#ec028b] rounded-full"></div>
-                 </div>
-                 <div className="ml-4">
-                     <h3 className="text-white font-bold">{currentUser?.name}</h3>
-                     <p className="text-xs text-[#ec028b] font-medium">Clocked In: 08:00 AM</p>
-                 </div>
-             </div>
-             <div className="flex space-x-2">
-                 <button 
+                </div>
+                <div className="ml-4">
+                    <h3 className="text-white font-bold">{currentUser?.name}</h3>
+                    <p className="text-xs text-[#ec028b] font-medium">Clocked In: 08:00 AM</p>
+                </div>
+            </div>
+            <div className="flex space-x-2">
+                <button
                     onClick={() => setActivePageId('E-03')}
                     className="px-3 py-1.5 bg-black hover:bg-gray-900 text-xs text-white rounded-md border border-gray-700 hover:border-gray-500 transition-colors"
-                 >
+                >
                     My Info
-                 </button>
-                 <button className="px-3 py-1.5 bg-black hover:bg-gray-900 text-xs text-gray-400 hover:text-white rounded-md border border-gray-800 hover:border-gray-600 transition-colors">
+                </button>
+                <button className="px-3 py-1.5 bg-black hover:bg-gray-900 text-xs text-gray-400 hover:text-white rounded-md border border-gray-800 hover:border-gray-600 transition-colors">
                     Clock Out
-                 </button>
-             </div>
+                </button>
+            </div>
         </div>
     );
 };
@@ -64,6 +66,28 @@ const StatCard = ({ label, value, icon: Icon, trend }: { label: string, value: s
     </div>
 );
 
+const TaskItem = ({ label, initialStatus, badge }: { label: string, initialStatus: boolean, badge?: string }) => {
+    const [status, setStatus] = useState(initialStatus);
+    return (
+        <li
+            onClick={() => setStatus(!status)}
+            className="flex items-center group cursor-pointer py-2 hover:bg-white/5 px-2 rounded-lg transition-colors"
+        >
+            <div className={cn(
+                "w-5 h-5 border transition-all duration-300 flex items-center justify-center rounded-sm",
+                status ? "bg-rhive-pink border-rhive-pink shadow-[0_0_8px_rgba(236,2,139,0.5)]" : "bg-black border-gray-600 group-hover:border-gray-400"
+            )}>
+                {status && <CheckIcon className="w-3.5 h-3.5 text-white" />}
+            </div>
+            <span className={cn(
+                "ml-3 text-sm transition-all",
+                status ? "text-gray-500 line-through" : "text-gray-300 group-hover:text-white"
+            )}>{label}</span>
+            {badge && <span className="ml-auto text-[10px] font-bold uppercase tracking-wider text-white bg-red-900/50 border border-red-900 px-2 py-0.5 rounded">{badge}</span>}
+        </li>
+    );
+};
+
 const EmployeeHomepage: React.FC = () => {
     const page = PAGE_GROUPS.flatMap(g => g.pages).find(p => p.id === 'E-01');
     const { setActivePageId } = useNavigation();
@@ -81,19 +105,19 @@ const EmployeeHomepage: React.FC = () => {
     ];
 
     return (
-        <PageContainer 
-            title={page?.name || 'Employee Homepage'} 
+        <PageContainer
+            title={page?.name || 'Employee Homepage'}
             description="Welcome back. Here is your daily command center."
             headerAction={
                 <div className="flex space-x-3">
-                     <button 
+                    <button
                         onClick={() => setActivePageId('E-SIM-GUIDE')}
                         className="flex items-center px-4 py-2 bg-gray-900/50 border border-gray-700 text-gray-400 rounded-full hover:bg-[#ec028b]/10 hover:text-[#ec028b] hover:border-[#ec028b]/50 transition-all text-sm font-medium"
                     >
                         <BoltIcon className="w-5 h-5 mr-2" />
                         Simulation Guide
                     </button>
-                    <button 
+                    <button
                         onClick={() => setActivePageId('E-G-01')}
                         className="group flex items-center px-4 py-2 bg-black/40 border border-[#ec028b] rounded-full hover:bg-[#ec028b] hover:text-white text-[#ec028b] transition-all duration-300 shadow-[0_0_10px_rgba(236,2,139,0.2)] hover:shadow-[0_0_20px_rgba(236,2,139,0.5)]"
                     >
@@ -112,43 +136,43 @@ const EmployeeHomepage: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                
+
                 {/* --- LEFT COLUMN (Main Feed) --- */}
                 <div className="lg:col-span-2 space-y-8">
-                    
+
                     {/* Quick Actions */}
                     <Card title="Quick Actions">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <Button 
-                                variant="secondary" 
+                            <Button
+                                variant="secondary"
                                 className="flex-col h-24 hover:bg-gray-900 hover:border-[#ec028b]/50 hover:shadow-[0_0_15px_rgba(236,2,139,0.15)] transition-all bg-black/40 border-gray-700"
                                 onClick={() => setActivePageId('E-CUST-IN')}
                             >
-                                <UserIcon className="w-6 h-6 mb-2 text-[#ec028b]" /> 
+                                <UserIcon className="w-6 h-6 mb-2 text-[#ec028b]" />
                                 <span className="text-xs uppercase font-bold tracking-wide">New Intake</span>
                             </Button>
-                            <Button 
-                                variant="secondary" 
+                            <Button
+                                variant="secondary"
                                 className="flex-col h-24 hover:bg-gray-900 hover:border-[#ec028b]/50 hover:shadow-[0_0_15px_rgba(236,2,139,0.15)] transition-all bg-black/40 border-gray-700"
                                 onClick={() => setActivePageId('E-SALES')}
                             >
-                                <BriefcaseIcon className="w-6 h-6 mb-2 text-[#ec028b]" /> 
+                                <BriefcaseIcon className="w-6 h-6 mb-2 text-[#ec028b]" />
                                 <span className="text-xs uppercase font-bold tracking-wide">Sales Hub</span>
                             </Button>
-                                <Button 
-                                variant="secondary" 
+                            <Button
+                                variant="secondary"
                                 className="flex-col h-24 hover:bg-gray-900 hover:border-[#ec028b]/50 hover:shadow-[0_0_15px_rgba(236,2,139,0.15)] transition-all bg-black/40 border-gray-700"
                                 onClick={() => setActivePageId('E-PROD')}
-                                >
-                                <CalendarDaysIcon className="w-6 h-6 mb-2 text-[#ec028b]" /> 
+                            >
+                                <CalendarDaysIcon className="w-6 h-6 mb-2 text-[#ec028b]" />
                                 <span className="text-xs uppercase font-bold tracking-wide">Production</span>
                             </Button>
-                                <Button 
-                                variant="secondary" 
+                            <Button
+                                variant="secondary"
                                 className="flex-col h-24 hover:bg-gray-900 hover:border-[#ec028b]/50 hover:shadow-[0_0_15px_rgba(236,2,139,0.15)] transition-all bg-black/40 border-gray-700"
                                 onClick={() => setActivePageId('E-RPT')}
-                                >
-                                <DocumentDuplicateIcon className="w-6 h-6 mb-2 text-[#ec028b]" /> 
+                            >
+                                <DocumentDuplicateIcon className="w-6 h-6 mb-2 text-[#ec028b]" />
                                 <span className="text-xs uppercase font-bold tracking-wide">Reports</span>
                             </Button>
                         </div>
@@ -157,7 +181,7 @@ const EmployeeHomepage: React.FC = () => {
                     {/* Recent Activity */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <Card title="Recent Activity" className="h-full">
-                                <ul className="space-y-4">
+                            <ul className="space-y-4">
                                 {activity.map((item, index) => (
                                     <li key={index} className="flex items-start text-sm border-b border-gray-800 pb-3 last:border-0 last:pb-0">
                                         <div className="w-2 h-2 rounded-full bg-[#ec028b] mt-1.5 mr-3 flex-shrink-0 shadow-[0_0_5px_#ec028b]"></div>
@@ -171,22 +195,12 @@ const EmployeeHomepage: React.FC = () => {
                                 ))}
                             </ul>
                         </Card>
-                        
+
                         <Card title="My Tasks" className="h-full">
                             <ul className="space-y-3">
-                                <li className="flex items-center group cursor-pointer">
-                                    <input type="checkbox" className="h-4 w-4 rounded bg-black border-gray-600 text-[#ec028b] focus:ring-[#ec028b] cursor-pointer" />
-                                    <label className="ml-3 text-gray-300 group-hover:text-white transition-colors text-sm">Follow up with 1927 Thompson</label>
-                                    <span className="ml-auto text-xs text-white bg-red-900/50 border border-red-900 px-2 py-0.5 rounded">Overdue</span>
-                                </li>
-                                <li className="flex items-center group cursor-pointer">
-                                    <input type="checkbox" className="h-4 w-4 rounded bg-black border-gray-600 text-[#ec028b] focus:ring-[#ec028b] cursor-pointer" />
-                                    <label className="ml-3 text-gray-300 group-hover:text-white transition-colors text-sm">Submit Q2 Expense Report</label>
-                                </li>
-                                <li className="flex items-center group cursor-pointer">
-                                    <input type="checkbox" className="h-4 w-4 rounded bg-black border-gray-600 text-[#ec028b] focus:ring-[#ec028b] cursor-pointer" />
-                                    <label className="ml-3 text-gray-300 group-hover:text-white transition-colors text-sm">Finalize material order</label>
-                                </li>
+                                <TaskItem label="Follow up with 1927 Thompson" initialStatus={false} badge="Overdue" />
+                                <TaskItem label="Submit Q2 Expense Report" initialStatus={false} />
+                                <TaskItem label="Finalize material order" initialStatus={true} />
                             </ul>
                         </Card>
                     </div>
@@ -216,14 +230,14 @@ const EmployeeHomepage: React.FC = () => {
 
                     {/* Pinned/Weather Widget */}
                     <div className="bg-gray-900/50 border border-gray-700 rounded-xl p-4 flex items-center justify-between backdrop-blur-sm">
-                            <div className="flex items-center">
+                        <div className="flex items-center">
                             <BoltIcon className="w-8 h-8 text-gray-500 mr-3" />
                             <div>
                                 <p className="text-sm font-bold text-white">Storm Alert</p>
                                 <p className="text-xs text-gray-400">Hail expected in Denver Area</p>
                             </div>
-                            </div>
-                            <span className="text-xs bg-black border border-gray-600 text-gray-300 px-2 py-1 rounded">View</span>
+                        </div>
+                        <span className="text-xs bg-black border border-gray-600 text-gray-300 px-2 py-1 rounded">View</span>
                     </div>
                 </div>
             </div>

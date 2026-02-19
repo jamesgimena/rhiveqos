@@ -23,7 +23,7 @@ export const PROJECT_STAGES: ProjectStage[] = [
 
 export const PAGE_GROUPS: PageGroup[] = [
     {
-        userType: 'Public',
+        userType: 'All',
         pages: [
             { id: 'P-01', name: 'About Us', userType: 'Public', description: 'Mission, Vision & Values' },
             { id: 'P-02', name: 'Our Services', userType: 'Public', description: 'Residential & Commercial Solutions' },
@@ -35,6 +35,8 @@ export const PAGE_GROUPS: PageGroup[] = [
             { id: 'P-10', name: 'PUBLIC CAREERS', userType: 'Public', description: 'Recruitment & Brand Manifesto' },
             { id: 'P-11', name: 'JOB APPLICATION', userType: 'Public', description: 'Candidate Intake Wizard' },
             { id: 'P-12', name: 'ESTIMATE TOOL', userType: 'Public', description: 'Instant Pricing Engine' },
+            { id: 'P-00', name: 'NEW WEBSITE', userType: 'Public', description: 'Instant Estimate Gateway' },
+            { id: 'P-00a', name: 'LIVE WEBSITE', userType: 'Public', description: 'Production Environment' },
         ]
     },
     {

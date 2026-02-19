@@ -8,9 +8,24 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+.next
 dist
 dist-ssr
 *.local
+.env
+.env.*
+
+# Large Media
+*.m4a
+*.mp4
+*.wav
+*.mp3
+*.mov
+*.zip
+*.tar.gz
+
+# REFERENCES
+REFERENCES/
 
 # Editor directories and files
 .vscode/*
@@ -22,3 +37,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+

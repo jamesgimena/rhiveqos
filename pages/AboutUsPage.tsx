@@ -2,12 +2,12 @@
 import React from 'react';
 import PageContainer from '../components/PageContainer';
 import { Card, CardContent } from '../components/ui/card';
-import { ShieldCheckIcon, UserIcon, SparklesIcon, ArrowRightIcon } from '../components/icons';
+import { ShieldCheckIcon, UserIcon, SparklesIcon, ArrowRightIcon, GlobeAlt as GlobeAltIcon } from '../components/icons';
 
 const AboutUsPage: React.FC = () => {
     return (
-        <PageContainer 
-            title="About RHIVE Construction" 
+        <PageContainer
+            title="About RHIVE Construction"
             description="Revolutionizing the roofing industry with AI and transparency."
         >
             {/* Hero Section */}
@@ -66,19 +66,43 @@ const AboutUsPage: React.FC = () => {
             <div className="mb-12">
                 <SectionHeader title="Leadership" icon={UserIcon} />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <FounderCard 
-                        name="Kara Robinson" 
-                        title="Founder / President" 
+                    <FounderCard
+                        name="Kara Robinson"
+                        title="Founder / President"
                         bio="A visionary leader dedicated to operational excellence and community impact. Kara drives the strategic growth and cultural integrity of RHIVE."
                         phone="801‑441‑0024"
                     />
-                    <FounderCard 
-                        name="Michael Robinson" 
-                        title="Founder / CEO" 
+                    <FounderCard
+                        name="Michael Robinson"
+                        title="Founder / CEO"
                         bio="The architect of RHIVE's technological revolution. Michael merges deep industry expertise with cutting-edge AI systems."
                         phone="801‑449‑1451"
                     />
                 </div>
+            </div>
+
+            {/* Website Entry Points */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                <button
+                    onClick={() => window.open('https://new.rhive.com', '_blank')}
+                    className="flex items-center justify-between p-8 bg-black/40 border border-rhive-pink/30 rounded-2xl group hover:border-rhive-pink transition-all"
+                >
+                    <div className="text-left">
+                        <span className="text-[10px] font-bold text-rhive-pink uppercase tracking-widest block mb-2">Development</span>
+                        <h4 className="text-2xl font-black text-white uppercase italic">New Website</h4>
+                    </div>
+                    <SparklesIcon className="w-8 h-8 text-rhive-pink group-hover:scale-125 transition-transform" />
+                </button>
+                <button
+                    onClick={() => window.open('https://rhive.com', '_blank')}
+                    className="flex items-center justify-between p-8 bg-black/40 border border-white/10 rounded-2xl group hover:border-white transition-all"
+                >
+                    <div className="text-left">
+                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-2">Production</span>
+                        <h4 className="text-2xl font-black text-white uppercase italic">Live Website</h4>
+                    </div>
+                    <GlobeAltIcon className="w-8 h-8 text-white/50 group-hover:text-white group-hover:scale-125 transition-all" />
+                </button>
             </div>
 
             {/* CTA Section */}

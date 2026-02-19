@@ -2,21 +2,28 @@
 import React from 'react';
 export const RhiveLogo: React.FC<any> = (p) => <img src="https://i.imgur.com/t0VcSgJ.png" alt="Logo" {...p} />;
 export const RhiveLogoBlack: React.FC<any> = (p) => <img src="https://i.imgur.com/EyBDHoK.png" alt="Logo" {...p} />;
-const I = (p: any) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect width="18" height="18" x="3" y="3" rx="2" /></svg>;
-export const HomeIcon = I;
-export const ChartBarIcon = I;
-export const UserIcon = I;
-export const CalendarDaysIcon = I;
-export const MagnifyingGlassIcon = I;
-export const SearchIcon = I;
-export const CalculatorIcon = I;
-export const PriceTagIcon = I;
-export const DocumentTextIcon = I;
-export const ListBulletIcon = I;
-export const BuildingStorefrontIcon = I;
-export const MapPinIcon = I;
-export const BriefcaseIcon = I;
-export const TruckIcon = I;
+const I = (p: any) => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+        <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+        <path d="M12 2v4M12 18v4M2 12h4M18 12h4" opacity="0.5" />
+        <path d="M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" opacity="0.3" />
+    </svg>
+);
+export const HomeIcon: React.FC<any> = (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>;
+export const ChartBarIcon: React.FC<any> = (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><line x1="12" y1="20" x2="12" y2="10" /><line x1="18" y1="20" x2="18" y2="4" /><line x1="6" y1="20" x2="6" y2="16" /></svg>;
+export const UserIcon: React.FC<any> = (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>;
+export const CalendarDaysIcon: React.FC<any> = (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>;
+export const MagnifyingGlassIcon: React.FC<any> = (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>;
+export const SearchIcon = MagnifyingGlassIcon;
+export const CalculatorIcon: React.FC<any> = (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect width="16" height="20" x="4" y="2" rx="2" /><line x1="8" y1="6" x2="16" y2="6" /><line x1="16" y1="14" x2="16" y2="18" /><path d="M16 10h.01" /><path d="M12 10h.01" /><path d="M8 10h.01" /><path d="M12 14h.01" /><path d="M8 14h.01" /><path d="M12 18h.01" /><path d="M8 18h.01" /></svg>;
+export const PriceTagIcon: React.FC<any> = (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="m12 2 10 10-9.5 9.5-10-10V2Z" /><path d="m6 6 .01 0" /></svg>;
+export const DocumentTextIcon: React.FC<any> = (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>;
+export const ListBulletIcon: React.FC<any> = (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>;
+export const BuildingStorefrontIcon: React.FC<any> = (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" /><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" /><path d="M2 7h20" /><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7" /></svg>;
+export const MapPinIcon: React.FC<any> = (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>;
+export const BriefcaseIcon: React.FC<any> = (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect width="20" height="14" x="2" y="7" rx="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>;
+export const TruckIcon: React.FC<any> = (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" /><path d="M15 18H9" /><path d="M19 18h2a1 1 0 0 0 1-1v-5l-4-4h-3v9Z" /><circle cx="7" cy="18" r="2" /><circle cx="17" cy="18" r="2" /></svg>;
+
 export const WrenchIcon = I;
 export const BoltIcon = I;
 export const CurrencyDollarIcon = I;
@@ -43,8 +50,9 @@ export const RoofIcon = I;
 export const CloudArrowUpIcon = I;
 export const DocumentCheckIcon = I;
 export const ArrowPathIcon = I;
-export const ZohoIcon = I;
-export const FingerPrintIcon = I;
+export const ZohoIcon: React.FC<any> = (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /></svg>;
+export const FingerPrintIcon: React.FC<any> = (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.02-.3 3" /><path d="M14 13.12c0 2.38 0 4.38-.14 4.38" /><path d="M2 12c0-4.42 3.58-8 8-8 1.47 0 2.89.4 4.13 1.15" /><path d="M7 20c1.64.63 3.3.69 5 .17 1.7-.52 3-1.6 3.83-3.04" /><path d="M11 18c.86 0 1.68-.03 2.5-.1" /><path d="M8 15c.18 1.81.47 3.21 1 4" /><path d="M17.13 15.39c.59-1.46.87-2.95.87-4.39 0-4.42-3.58-8-8-8" /><path d="M5 11c.1 2.13.33 3.9.7 5" /><path d="M12 12.03h.01" /></svg>;
+
 export const DocumentDuplicateIcon = I;
 export const GutterIcon = I;
 export const HeatTraceIcon = I;
@@ -65,7 +73,9 @@ export const BellIcon = I;
 export const EllipsisHorizontalIcon = I;
 export const Cog6ToothIcon = I;
 export const Sparkles = I;
-export const GlobeAltIcon = I;
+export const GlobeAlt: React.FC<any> = (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>;
+export const GlobeAltIcon = GlobeAlt;
+
 export const QuestionMarkCircleIcon = I;
 export const RhiveGeopinIcon = I;
 export const PhoneIcon = I;
@@ -270,7 +280,6 @@ export const EnvelopeIcon2 = I;
 export const ShareIcon2 = I;
 export const PaperAirplane = I;
 export const LinkIcon2 = I;
-export const GlobeAlt = I;
 export const Sparkles2 = I;
 export const FireIcon2 = I;
 export const LightBulb = I;

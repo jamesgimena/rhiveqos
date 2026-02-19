@@ -1,4 +1,5 @@
-import React from 'react';
+import { useTheme } from '../contexts/ThemeContext';
+import { cn } from '../lib/utils';
 
 interface PageContainerProps {
     title: string;
@@ -8,6 +9,9 @@ interface PageContainerProps {
 }
 
 const PageContainer: React.FC<PageContainerProps> = ({ title, description, children, headerAction }) => {
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
+
     return (
         <div className="p-6 md:p-10 h-full overflow-y-auto animate-fade-in scrollbar-hide relative">
             <style>{`
@@ -28,10 +32,10 @@ const PageContainer: React.FC<PageContainerProps> = ({ title, description, child
                     scrollbar-width: none;  /* Firefox */
                 }
             `}</style>
-            <header className="mb-8 pb-4 border-b border-gray-700/50 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <header className={cn("mb-8 pb-4 border-b flex flex-col md:flex-row md:items-start md:justify-between gap-4 transition-colors duration-500", isDark ? "border-white/5" : "border-black/5")}>
                 <div>
-                    <h1 className="text-3xl font-extrabold text-white tracking-tight">{title}</h1>
-                    <p className="text-gray-400 mt-2 max-w-3xl">{description}</p>
+                    <h1 className={cn("text-3xl font-extrabold tracking-tight transition-colors duration-500", isDark ? "text-white" : "text-black")}>{title}</h1>
+                    <p className={cn("mt-2 max-w-3xl transition-colors duration-500", isDark ? "text-gray-400" : "text-gray-600")}>{description}</p>
                 </div>
                 {headerAction && (
                     <div className="flex-shrink-0">
