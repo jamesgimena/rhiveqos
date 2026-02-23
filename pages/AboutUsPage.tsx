@@ -4,6 +4,8 @@ import { ShieldCheckIcon, UserIcon, ArrowRightIcon, Zap, HeartIcon, CpuChipIcon,
 import { cn } from '../lib/utils';
 import PlexusShape from '../components/PlexusShape';
 import { AddressScanInput } from '../components/AddressScanInput';
+import { AboutUsLightbox } from '../components/AboutUsLightbox';
+import { AboutUsHeroPreview } from '../components/AboutUsHero';
 
 // --- Reusable Glitch Text Component ---
 const GlitchText = ({ text, className }: { text: string, className?: string }) => {
@@ -71,8 +73,41 @@ const SectionHeader = ({ title, subtitle }: { title: string, subtitle?: string }
 );
 
 const AboutUsPage: React.FC = () => {
+    const [isLightboxOpen, setIsLightboxOpen] = React.useState(false);
+    const [isHeroPreviewOpen, setIsHeroPreviewOpen] = React.useState(false);
+
     return (
         <div className="relative w-full min-h-screen font-sans bg-[var(--rhive-bg)] overflow-hidden">
+
+            {/* L-01 Lightbox Trigger CTA (Internal Testing) */}
+            <div className="fixed top-24 right-6 z-50 flex flex-col gap-4 items-end">
+                <button
+                    onClick={() => setIsLightboxOpen(true)}
+                    className="bg-rhive-pink/10 hover:bg-rhive-pink/20 border border-rhive-pink/50 text-rhive-pink px-4 py-2 font-bold text-xs uppercase tracking-widest backdrop-blur-md transition-all group overflow-hidden shadow-[0_0_15px_rgba(236,2,139,0.2)] hover:shadow-[0_0_25px_rgba(236,2,139,0.4)] relative"
+                    style={{ clipPath: 'polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px)' }}
+                >
+                    <span className="relative z-10 flex items-center gap-2">
+                        <Zap size={14} className="group-hover:animate-pulse" />
+                        Preview L-01 Lightbox
+                    </span>
+                    <div className="absolute inset-0 bg-rhive-pink/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-0" />
+                </button>
+
+                <button
+                    onClick={() => setIsHeroPreviewOpen(true)}
+                    className="bg-rhive-blue/10 hover:bg-rhive-blue/20 border border-rhive-blue/50 text-rhive-blue px-4 py-2 font-bold text-xs uppercase tracking-widest backdrop-blur-md transition-all group overflow-hidden shadow-[0_0_15px_rgba(8,19,124,0.2)] hover:shadow-[0_0_25px_rgba(8,19,124,0.4)] relative"
+                    style={{ clipPath: 'polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px)' }}
+                >
+                    <span className="relative z-10 flex items-center gap-2">
+                        <Zap size={14} className="group-hover:animate-pulse" />
+                        Preview H-01 Hero
+                    </span>
+                    <div className="absolute inset-0 bg-rhive-blue/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-0" />
+                </button>
+            </div>
+
+            <AboutUsLightbox isOpen={isLightboxOpen} onClose={() => setIsLightboxOpen(false)} />
+            <AboutUsHeroPreview isOpen={isHeroPreviewOpen} onClose={() => setIsHeroPreviewOpen(false)} />
 
             {/* Unified Background Environment - Keeps it clean, no changing sections */}
             <div className="fixed inset-0 z-0 pointer-events-none opacity-20">
