@@ -147,21 +147,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                         ))}
                     </div>
 
-                    <div className="space-y-6 relative z-20 max-w-md mx-auto">
-                        {/* Separate PUBLIC PAGES Button */}
-                        <Button
-                            onClick={() => onLogin('Public')}
-                            className={cn(
-                                "w-full h-16 text-sm font-black tracking-[0.3em] transition-all duration-500 uppercase border shadow-lg hover:scale-[1.02]",
-                                isDark
-                                    ? "border-rhive-pink/50 bg-black/40 text-rhive-pink hover:bg-rhive-pink hover:text-white"
-                                    : "border-rhive-pink/30 bg-white text-rhive-pink hover:bg-rhive-pink hover:text-white"
-                            )}
-                        >
-                            <span>PUBLIC PAGES</span>
-                            <GlobeAltIcon className="w-5 h-5 ml-3" />
-                        </Button>
-
+                    <div className="relative z-20 max-w-md mx-auto">
                         <div className={cn("grid grid-cols-2 gap-4 pt-8 border-t", isDark ? "border-gray-800/50" : "border-gray-200")}>
                             <button className={cn(
                                 "flex items-center justify-center gap-3 p-4 border text-[9px] font-bold uppercase tracking-[0.3em] transition-all rounded-lg group",

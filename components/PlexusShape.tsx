@@ -1,6 +1,12 @@
-
 import React, { useRef, useEffect } from 'react';
-import { Dot } from '../types';
+
+interface Dot {
+  x: number;
+  y: number;
+  baseX: number;
+  baseY: number;
+  radius: number;
+}
 
 interface PlexusShapeProps {
   backgroundColor: string;
@@ -19,7 +25,7 @@ const PlexusShape: React.FC<PlexusShapeProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const animationFrameId = useRef<number>();
+  const animationFrameId = useRef<number>(0);
   const dots = useRef<Dot[]>([]);
   const mouse = useRef<{ x: number | null; y: number | null }>({ x: null, y: null });
 
@@ -37,17 +43,19 @@ const PlexusShape: React.FC<PlexusShapeProps> = ({
 
     const initDots = () => {
       dots.current = [];
-      // Heuristic for dot count based on area
-      const numDots = Math.floor((width * height) / (150000 / density));
+      const spacing = 40 - (density / 5); // spacing based on density
+      const padding = 10;
 
-      for (let i = 0; i < Math.max(10, numDots); i++) {
-        dots.current.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          vx: (Math.random() - 0.5) * 0.75,
-          vy: (Math.random() - 0.5) * 0.75,
-          radius: Math.random() * 2 + 1,
-        });
+      for (let x = padding; x < width - padding; x += spacing) {
+        for (let y = padding; y < height - padding; y += spacing) {
+          dots.current.push({
+            x: x,
+            y: y,
+            baseX: x,
+            baseY: y,
+            radius: 1, // smaller dots for premium look
+          });
+        }
       }
     };
 
@@ -87,64 +95,70 @@ const PlexusShape: React.FC<PlexusShapeProps> = ({
     canvas.addEventListener('mouseleave', handleMouseLeave);
 
     const animate = () => {
-      ctx.fillStyle = backgroundColor;
-      ctx.fillRect(0, 0, width, height);
+      // Clear the canvas properly to prevent streaking with transparent backgrounds
+      ctx.clearRect(0, 0, width, height);
+      if (backgroundColor !== 'transparent') {
+        ctx.fillStyle = backgroundColor;
+        ctx.fillRect(0, 0, width, height);
+      }
 
-      // Update dots
+      const time = Date.now() / 1000; // Base time for breathing wave
+
       dots.current.forEach(dot => {
-        dot.x += dot.vx;
-        dot.y += dot.vy;
+        let targetX = dot.baseX;
+        let targetY = dot.baseY;
 
-        // Bounce off walls
-        if (dot.x < 0 || dot.x > width) dot.vx *= -1;
-        if (dot.y < 0 || dot.y > height) dot.vy *= -1;
+        // 1. Global Breathing Pulse
+        // Creates a slow, organic wave across the grid based on coordinates and time
+        const wave = Math.sin(time * 1.5 + (dot.baseX * 0.005) + (dot.baseY * 0.005));
+        let dotOpacity = 0.2 + (0.15 * wave); // Breath oscillates between 0.05 and 0.35
+        let currentRadius = dot.radius + (0.3 * wave);
 
-        ctx.beginPath();
-        ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
-        ctx.fillStyle = dotColor;
-        ctx.fill();
-      });
-
-      // Connections
-      const connectDistance = 80;
-      const mouseDistance = 120;
-
-      for (let i = 0; i < dots.current.length; i++) {
-        for (let j = i + 1; j < dots.current.length; j++) {
-          const dx = dots.current[i].x - dots.current[j].x;
-          const dy = dots.current[i].y - dots.current[j].y;
+        // 2. Interactive Mouse Pulsation
+        if (mouse.current.x !== null && mouse.current.y !== null) {
+          const dx = mouse.current.x - dot.baseX;
+          const dy = mouse.current.y - dot.baseY;
           const dist = Math.sqrt(dx * dx + dy * dy);
+          const maxInfluence = 250; // Radius of mouse flashlight effect
 
-          if (dist < connectDistance) {
-            ctx.beginPath();
-            ctx.moveTo(dots.current[i].x, dots.current[i].y);
-            ctx.lineTo(dots.current[j].x, dots.current[j].y);
-            const opacity = 1 - dist / connectDistance;
-            ctx.strokeStyle = `rgba(${lineColor}, ${opacity})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
+          if (dist < maxInfluence) {
+            // Force is strongest (1.0) at cursor center, falls off to 0 at edge
+            const force = Math.max(0, 1 - dist / maxInfluence);
+            // Exponential curve for more dramatic core glow
+            const intensity = Math.pow(force, 2);
+
+            // Mild gravity pull towards the mouse
+            targetX += (dx / dist) * intensity * 8;
+            targetY += (dy / dist) * intensity * 8;
+
+            // Spike opacity and size near mouse
+            dotOpacity = Math.min(1, dotOpacity + (intensity * 0.8));
+            currentRadius += intensity * 2.5;
           }
         }
-      }
 
-      // Mouse connections
-      if (mouse.current.x !== null && mouse.current.y !== null) {
-        dots.current.forEach(dot => {
-          const dx = dot.x - mouse.current.x!;
-          const dy = dot.y - mouse.current.y!;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+        // Apply calculated transformations
+        dot.x = targetX;
+        dot.y = targetY;
 
-          if (dist < mouseDistance) {
-            ctx.beginPath();
-            ctx.moveTo(dot.x, dot.y);
-            ctx.lineTo(mouse.current.x!, mouse.current.y!);
-            const opacity = 1 - dist / mouseDistance;
-            ctx.strokeStyle = `rgba(${lineColor}, ${opacity})`;
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
-          }
-        });
-      }
+        // Draw dot with calculated opacity
+        ctx.globalAlpha = Math.max(0, dotOpacity);
+
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, Math.max(0.1, currentRadius), 0, Math.PI * 2);
+        ctx.fillStyle = dotColor;
+
+        // Add a neon glow if the dot is highly stimulated (mouse hover)
+        if (currentRadius > dot.radius * 2) {
+          ctx.shadowBlur = 12;
+          ctx.shadowColor = dotColor;
+          ctx.fill();
+          ctx.shadowBlur = 0; // Reset for performance on normal dots
+        } else {
+          ctx.fill();
+        }
+      });
+      ctx.globalAlpha = 1.0; // Reset alpha for next frame
 
       animationFrameId.current = requestAnimationFrame(animate);
     };

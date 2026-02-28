@@ -11,7 +11,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [theme, setTheme] = useState<Theme>('light');
+    const [theme, setTheme] = useState<Theme>('dark');
 
     useEffect(() => {
         const savedTheme = localStorage.getItem('rhive-theme') as Theme;
@@ -26,8 +26,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         localStorage.setItem('rhive-theme', theme);
         if (theme === 'dark') {
             document.documentElement.classList.add('dark');
+            document.body.classList.remove('light-mode-active');
         } else {
             document.documentElement.classList.remove('dark');
+            document.body.classList.add('light-mode-active');
         }
     }, [theme]);
 

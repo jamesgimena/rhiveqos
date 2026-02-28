@@ -5,10 +5,12 @@ import React from 'react';
 import LoginPage from './pages/LoginPage';
 import PublicHomepage from './pages/PublicHomepage'; // P-00
 import CurrentWebsitePage from './pages/CurrentWebsitePage'; // P-00a
+import Web2Page from './pages/Web2Page'; // P-00b
 import AboutUsPage from './pages/AboutUsPage'; // P-01
 import OurServicesPage from './pages/OurServicesPage'; // P-02
 import OurProcessPage from './pages/OurProcessPage'; // P-03
-import FinancingPage from './pages/FinancingPage'; // P-04
+import ServicePackagesPage from './pages/ServicePackagesPage'; // P-04
+import FinancingPage from './pages/FinancingPage'; // P-08
 import ContactPage from './pages/ContactPage'; // P-05
 import PasswordResetPage from './pages/PasswordResetPage'; // P-07
 import ContractorSignupPage from './pages/ContractorSignupPage'; // P-09
@@ -71,13 +73,15 @@ export const pageComponentMap: Record<string, React.FC> = {
   // Public
   'P-00': PublicHomepage,
   'P-00a': CurrentWebsitePage,
+  'P-00b': Web2Page,
   'P-01': AboutUsPage,
   'P-02': OurServicesPage,
   'P-03': OurProcessPage,
-  'P-04': FinancingPage,
+  'P-04': ServicePackagesPage,
   'P-05': ContactPage,
   'P-06': LoginPage,
   'P-07': PasswordResetPage,
+  'P-08': FinancingPage,
   'P-09': ContractorSignupPage,
   'P-10': PublicCareersPage,
   'P-11': JobApplicationPage,

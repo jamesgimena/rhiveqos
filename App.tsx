@@ -54,7 +54,7 @@ const AppContentAuthenticated: React.FC = () => {
     if (activePageId === 'P-00' || activePageId === 'P-00a') {
         return (
             <div className={cn(
-                "fixed inset-0 w-screen h-screen overflow-hidden font-sans transition-colors duration-500",
+                "fixed inset-0 w-screen h-screen overflow-y-auto font-sans transition-colors duration-500",
                 isDark ? "bg-black text-white" : "bg-white text-black"
             )}>
                 <CurrentPage />
@@ -78,7 +78,7 @@ const AppContentAuthenticated: React.FC = () => {
             <div className="relative z-10 flex h-full w-full pt-12">
                 <Sidebar />
                 <main className={cn(
-                    "flex-1 h-full overflow-hidden relative border-l transition-colors duration-500",
+                    "flex-1 h-full overflow-y-auto relative border-l transition-colors duration-500",
                     isDark ? "bg-black/20 border-white/5" : "bg-white/20 border-black/5"
                 )}>
                     <CurrentPage />
@@ -91,8 +91,15 @@ const AppContentAuthenticated: React.FC = () => {
 
 const LoginBridge: React.FC = () => {
     const { currentUser, login } = useMockDB();
+    const { setActivePageId } = useNavigation();
     const { theme } = useTheme();
     const isDark = theme === 'dark';
+
+    useEffect(() => {
+        if (!currentUser) {
+            setActivePageId('');
+        }
+    }, [currentUser, setActivePageId]);
 
     if (!currentUser) {
         return (

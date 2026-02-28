@@ -35,7 +35,7 @@ export const PAGE_GROUPS: PageGroup[] = [
             { id: 'P-10', name: 'PUBLIC CAREERS', userType: 'Public', description: 'Recruitment & Brand Manifesto' },
             { id: 'P-11', name: 'JOB APPLICATION', userType: 'Public', description: 'Candidate Intake Wizard' },
             { id: 'P-12', name: 'ESTIMATE TOOL', userType: 'Public', description: 'Instant Pricing Engine' },
-            { id: 'P-00', name: 'NEW WEBSITE', userType: 'Public', description: 'Instant Estimate Gateway' },
+            { id: 'P-00', name: 'Home', userType: 'Public', description: 'RHIVE Main Gateway' },
             { id: 'P-00a', name: 'LIVE WEBSITE', userType: 'Public', description: 'Production Environment' },
         ]
     },

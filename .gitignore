@@ -24,7 +24,7 @@ dist-ssr
 *.zip
 *.tar.gz
 
-# REFERENCES
+# REFERENCES (TOGGLE: Comment out to allow AI indexing; Un-comment to protect during push)
 REFERENCES/
 
 # Editor directories and files
