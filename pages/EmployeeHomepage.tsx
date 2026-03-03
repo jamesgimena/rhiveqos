@@ -71,11 +71,12 @@ const StatCard = ({ label, value, icon: Icon, trend, loading }: { label: string,
     </div>
 );
 
-// --- Storm Alert Widget (Dynamic) ---
+// --- Storm Alert Widget (always visible, location-aware) ---
 const GOOGLE_WEATHER_API_KEY = (import.meta as any).env?.VITE_GOOGLE_WEATHER_API_KEY || '';
 const WEATHER_BASE = 'https://weather.googleapis.com/v1';
 const DEFAULT_LAT = 39.7392;
 const DEFAULT_LON = -104.9903;
+const DEFAULT_CITY = 'Denver';
 
 const STORM_TYPES = new Set([
     'THUNDERSTORM', 'TORNADO', 'HEAVY_RAIN', 'HAIL', 'FREEZING_RAIN',
@@ -83,55 +84,145 @@ const STORM_TYPES = new Set([
 ]);
 
 const StormAlertWidget = () => {
-    const [storm, setStorm] = useState<{ date: string, desc: string } | null>(null);
+    const [hasStorm, setHasStorm] = useState(false);
+    const [stormDesc, setStormDesc] = useState('Hail expected in Denver Area');
+    const [cityName, setCityName] = useState(DEFAULT_CITY);
     const { setActivePageId } = useNavigation();
 
+    // Get browser GPS coords, fallback to Denver
+    const getCoords = (): Promise<{ lat: number; lon: number }> =>
+        new Promise(resolve => {
+            if (!navigator.geolocation) { resolve({ lat: DEFAULT_LAT, lon: DEFAULT_LON }); return; }
+            navigator.geolocation.getCurrentPosition(
+                pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+                () => resolve({ lat: DEFAULT_LAT, lon: DEFAULT_LON }),
+                { timeout: 6000 }
+            );
+        });
+
+    // Free reverse-geocode → city name (no key needed)
+    const getCity = async (lat: number, lon: number): Promise<string> => {
+        try {
+            const r = await fetch(
+                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
+            );
+            if (!r.ok) return DEFAULT_CITY;
+            const d = await r.json();
+            return d.city || d.locality || d.principalSubdivision || DEFAULT_CITY;
+        } catch { return DEFAULT_CITY; }
+    };
+
     useEffect(() => {
-        const fetchForecast = async () => {
-            if (!GOOGLE_WEATHER_API_KEY) return;
+        const run = async () => {
+            const { lat, lon } = await getCoords();
+            const city = await getCity(lat, lon);
+            setCityName(city);
+
+            // Demo mode when no API key – always show a storm alert
+            if (!GOOGLE_WEATHER_API_KEY) {
+                setHasStorm(true);
+                setStormDesc(`Hail expected in ${city} Area`);
+                return;
+            }
+
             try {
                 const res = await fetch(
                     `${WEATHER_BASE}/forecast/days:lookup?key=${GOOGLE_WEATHER_API_KEY}` +
-                    `&location.latitude=${DEFAULT_LAT}&location.longitude=${DEFAULT_LON}&days=7&unitsSystem=IMPERIAL`
+                    `&location.latitude=${lat}&location.longitude=${lon}&days=7&unitsSystem=METRIC`
                 );
                 if (!res.ok) return;
                 const data = await res.json();
-
-                // Find first storm in forecast
                 const firstStorm = data.forecastDays?.find((d: any) => {
                     const cond = d.daytimeForecast?.weatherCondition?.type || '';
                     const thunderProb = d.daytimeForecast?.thunderstormProbability ?? 0;
                     return STORM_TYPES.has(cond) || thunderProb >= 40;
                 });
-
                 if (firstStorm) {
-                    const date = new Date(firstStorm.displayDate.year, firstStorm.displayDate.month - 1, firstStorm.displayDate.day);
-                    setStorm({
-                        date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                        desc: firstStorm.daytimeForecast.weatherCondition.description.text
-                    });
+                    const desc = firstStorm.daytimeForecast?.weatherCondition?.description?.text || 'Storm Warning';
+                    setHasStorm(true);
+                    setStormDesc(`${desc} in ${city} Area`);
+                } else {
+                    setHasStorm(false);
+                    setStormDesc(`No active alerts near ${city}`);
                 }
-            } catch (e) {
-                // ignore
-            }
+            } catch { /* ignore */ }
         };
-        fetchForecast();
+        run();
     }, []);
 
-    if (!storm) return null;
-
+    // ── Always visible: active storm = bold red/orange; calm = muted ──
     return (
-        <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-4 flex items-center justify-between backdrop-blur-sm animate-pulse shadow-[0_0_15px_rgba(249,115,22,0.1)]">
-            <div className="flex items-center">
-                <BoltIcon className="w-8 h-8 text-orange-500 mr-3" />
+        <div
+            className={hasStorm
+                ? 'rounded-xl p-4 flex items-center justify-between backdrop-blur-sm shadow-[0_0_20px_rgba(249,115,22,0.15)]'
+                : 'rounded-xl p-4 flex items-center justify-between backdrop-blur-sm'
+            }
+            style={{
+                background: hasStorm
+                    ? 'rgba(18,8,2,0.85)'
+                    : 'rgba(255,255,255,0.03)',
+                border: hasStorm
+                    ? '1px solid rgba(251,146,60,0.5)'
+                    : '1px solid rgba(255,255,255,0.08)',
+                transition: 'all 0.4s ease',
+            }}
+        >
+            {/* Icon box */}
+            <div className="flex items-center" style={{ gap: 14 }}>
+                <div style={{
+                    width: 44, height: 44, flexShrink: 0,
+                    borderRadius: 10,
+                    background: hasStorm ? 'rgba(234,88,12,0.22)' : 'rgba(255,255,255,0.05)',
+                    border: hasStorm ? '1px solid rgba(251,146,60,0.45)' : '1px solid rgba(255,255,255,0.1)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 22,
+                }}>
+                    {hasStorm ? '🌨️' : '🌤️'}
+                </div>
+
+                {/* Text */}
                 <div>
-                    <p className="text-sm font-bold text-white">Storm Alert • {storm.date}</p>
-                    <p className="text-xs text-orange-200/70 truncate w-40">{storm.desc}</p>
+                    <p style={{
+                        margin: 0,
+                        fontSize: 13,
+                        fontWeight: 700,
+                        color: hasStorm ? '#fb923c' : 'rgba(255,255,255,0.45)',
+                        lineHeight: 1.25,
+                    }}>
+                        {hasStorm ? '⚠ Storm Alert' : 'Storm Alert'}
+                    </p>
+                    <p style={{
+                        margin: '3px 0 0',
+                        fontSize: 11,
+                        color: hasStorm ? 'rgba(255,255,255,0.65)' : 'rgba(255,255,255,0.28)',
+                        lineHeight: 1.3,
+                        maxWidth: 180,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                    }}>
+                        {stormDesc}
+                    </p>
                 </div>
             </div>
+
+            {/* View button — always shown */}
             <button
-                onClick={() => setActivePageId('E-04')}
-                className="text-[10px] bg-black border border-orange-500/40 text-orange-400 hover:bg-orange-500 hover:text-white px-3 py-1.5 rounded-full font-bold transition-all uppercase tracking-wider"
+                onClick={() => setActivePageId('E-38')}
+                style={{
+                    flexShrink: 0,
+                    padding: '6px 14px',
+                    borderRadius: 8,
+                    background: hasStorm ? 'rgba(251,146,60,0.15)' : 'rgba(255,255,255,0.06)',
+                    border: hasStorm ? '1px solid rgba(251,146,60,0.4)' : '1px solid rgba(255,255,255,0.1)',
+                    color: hasStorm ? '#fb923c' : 'rgba(255,255,255,0.35)',
+                    fontSize: 12, fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    whiteSpace: 'nowrap',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = hasStorm ? 'rgba(251,146,60,0.28)' : 'rgba(255,255,255,0.12)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = hasStorm ? 'rgba(251,146,60,0.15)' : 'rgba(255,255,255,0.06)'; }}
             >
                 View
             </button>
