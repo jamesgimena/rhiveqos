@@ -159,7 +159,7 @@ const WeatherGuideWidgetPage: React.FC = () => {
 
     const [location, setLocation] = useState<LocationState>({ lat: 39.7392, lon: -104.9903, name: 'Denver, CO' });
     const [searchInput, setSearchInput] = useState('');
-    const [units, setUnits] = useState<'imperial' | 'metric'>('metric');
+    const [units, setUnits] = useState<'imperial' | 'metric'>('imperial');
     const [current, setCurrent] = useState<CurrentConditions | null>(null);
     const [forecast, setForecast] = useState<DayForecast[]>([]);
     const [loading, setLoading] = useState(false);
