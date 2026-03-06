@@ -235,6 +235,16 @@ export const contactService = {
             return { success: false, error: error.message };
         }
     },
+    getByPhone: async (phone: string) => {
+        try {
+            const q = query(collection(db, 'contacts'), where('phone', '==', phone));
+            const snapshot = await getDocs(q);
+            if (snapshot.empty) return { success: false, error: 'Contact not found' };
+            return { success: true, data: snapshot.docs.map(mapDoc)[0] };
+        } catch (error: any) {
+            return { success: false, error: error.message };
+        }
+    },
     create: (data: any) => firestoreService.addDocument('contacts', data),
     update: (id: string, data: any) => firestoreService.updateDocument('contacts', id, data),
     delete: (id: string) => firestoreService.deleteDocument('contacts', id)
