@@ -121,7 +121,7 @@ const stageBadgeColor = (stage?: string) => {
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 const GlobalNavCustomerLookup: React.FC = () => {
-    const { setActivePageId } = useNavigation();
+    const { setActivePageId, setSelectedPropertyId, setSelectedProjectId } = useNavigation();
 
     // ── Firebase State ──
     const [contacts, setContacts] = useState<FirebaseContact[]>([]);
@@ -200,6 +200,7 @@ const GlobalNavCustomerLookup: React.FC = () => {
         p.address_full || [p.property_address, p.city, p.state, p.zip].filter(Boolean).join(', ') || 'Unknown Address';
 
     const handleProjectClick = (proj: FirebaseProject) => {
+        setSelectedProjectId(proj.id);
         setActivePageId('E-05'); // Pipeline/Deals page
     };
 
@@ -208,6 +209,7 @@ const GlobalNavCustomerLookup: React.FC = () => {
     };
 
     const handlePropertyClick = (p: FirebaseProperty) => {
+        setSelectedPropertyId(p.id);
         setActivePageId('E-12'); // Property page
     };
 
