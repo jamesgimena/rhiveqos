@@ -218,10 +218,12 @@ export interface Page {
     name: string;
     userType: UserType | 'All';
     description?: string;
+    category?: string;
 }
 
 export interface PageGroup {
     userType: UserType | 'All';
+    label?: string;
     pages: Page[];
 }
 

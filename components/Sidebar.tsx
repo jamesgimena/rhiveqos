@@ -3,7 +3,7 @@ import React from 'react';
 import { useMockDB } from '../contexts/MockDatabaseContext';
 import { useNavigation } from '../contexts/NavigationContext';
 import { PAGE_GROUPS } from '../constants';
-import { PageGroup } from '../types';
+import { PageGroup, Page } from '../types';
 import { 
     RhiveLogo, 
     HomeIcon, 
@@ -25,7 +25,11 @@ import {
     ShieldCheckIcon,
     SearchIcon,
     ClockIcon,
-    KeyIcon
+    KeyIcon,
+    ChevronDownIcon,
+    ChevronRightIcon,
+    Squares2x2Icon,
+    IdentificationIcon
 } from './icons';
 import { cn } from '../lib/utils';
 
@@ -54,15 +58,24 @@ const getIconForPage = (id: string) => {
     if (id === 'E-04' || id === 'E-22') return <CalendarDaysIcon className="h-5 w-5" />;
     if (id === 'E-05') return <ListBulletIcon className="h-5 w-5" />;
     if (id === 'E-06') return <MapPinIcon className="h-5 w-5" />;
+    if (id === 'E-15') return <BriefcaseIcon className="h-5 w-5" />;
     if (id === 'E-16') return <CurrencyDollarIcon className="h-5 w-5" />;
     if (id === 'E-17') return <ChartBarIcon className="h-5 w-5" />;
     if (id === 'E-18') return <DocumentTextIcon className="h-5 w-5" />;
+    if (id === 'E-19' || id === 'A-05') return <ListBulletIcon className="h-5 w-5" />;
     if (id === 'E-23') return <PriceTagIcon className="h-5 w-5" />;
+    if (id === 'E-25' || id === 'E-24') return <BuildingStorefrontIcon className="h-5 w-5" />;
     if (id === 'E-27' || id === 'P-12') return <CalculatorIcon className="h-5 w-5" />;
     if (id === 'E-38') return <BoltIcon className="h-5 w-5" />;
     if (id === 'E-29') return <ShieldCheckIcon className="h-5 w-5" />;
     if (id === 'E-32') return <WrenchIcon className="h-5 w-5" />;
     if (id === 'E-34') return <CurrencyDollarIcon className="h-5 w-5" />;
+    if (id === 'E-08' || id === 'E-07') return <UserIcon className="h-5 w-5" />;
+    if (id === 'E-10' || id === 'E-09') return <UserIcon className="h-5 w-5" />;
+    if (id === 'E-12' || id === 'E-11') return <MapPinIcon className="h-5 w-5" />;
+    if (id === 'E-14') return <Squares2x2Icon className="h-5 w-5" />;
+    if (id === 'E-21') return <IdentificationIcon className="h-5 w-5" />;
+    if (id === 'E-22') return <CalendarDaysIcon className="h-5 w-5" />;
     
     // CUSTOMER
     if (id === 'C-01') return <HomeIcon className="h-5 w-5" />;
@@ -90,8 +103,17 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
     const { currentUser, logout } = useMockDB();
     const { activePageId, setActivePageId } = useNavigation();
+    
+    // State to track expanded categories
+    const [expandedCategories, setExpandedCategories] = React.useState<Record<string, boolean>>({
+        'Stages': true // Keep Stages expanded by default
+    });
 
     if (!currentUser) return null;
+
+    const toggleCategory = (cat: string) => {
+        setExpandedCategories(prev => ({ ...prev, [cat]: !prev[cat] }));
+    };
 
     // Filter groups based on user role
     const sourceGroups = pageGroups || PAGE_GROUPS;
@@ -106,32 +128,96 @@ export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
             </div>
 
             <div className="flex-1 overflow-y-auto py-4 scrollbar-hide">
-                {userGroups.map((group, groupIdx) => (
-                    <div key={groupIdx} className="mb-6 px-4">
-                        <div className="space-y-1">
-                            {group.pages.map(page => (
-                                <button
-                                    key={page.id}
-                                    onClick={() => setActivePageId(page.id)}
-                                    className={cn(
-                                        "flex items-center w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
-                                        activePageId === page.id
-                                            ? "bg-[#ec028b]/20 text-[#ec028b] border border-[#ec028b]/30"
-                                            : "text-gray-400 hover:bg-gray-800 hover:text-white"
-                                    )}
-                                >
-                                    <span className="mr-3 opacity-80">
-                                        {getIconForPage(page.id)}
-                                    </span>
-                                    <span className="truncate">{page.name}</span>
-                                </button>
-                            ))}
+                {userGroups.map((group, groupIdx) => {
+                    // Group pages by category
+                    const pagesByCategory = group.pages.reduce((acc: Record<string, Page[]>, page) => {
+                        const cat = page.category || 'none';
+                        if (!acc[cat]) acc[cat] = [];
+                        acc[cat].push(page);
+                        return acc;
+                    }, {} as Record<string, Page[]>);
+
+                    return (
+                        <div key={groupIdx} className="mb-8 px-4">
+                            {group.label && (
+                                <div className="px-4 mb-3">
+                                    <p className="text-[10px] font-black tracking-[0.2em] text-[#ec028b] uppercase opacity-70">
+                                        {group.label}
+                                    </p>
+                                </div>
+                            )}
+
+                            <div className="space-y-1">
+                                {(Object.entries(pagesByCategory) as [string, Page[]][]).map(([cat, pages]) => {
+                                    if (cat === 'none') {
+                                        return pages.map(page => (
+                                            <button
+                                                key={page.id}
+                                                onClick={() => setActivePageId(page.id)}
+                                                className={cn(
+                                                    "flex items-center w-full px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                                                    activePageId === page.id
+                                                        ? "bg-[#ec028b]/20 text-[#ec028b] border border-[#ec028b]/30"
+                                                        : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                                                )}
+                                            >
+                                                <span className="mr-3 opacity-80">
+                                                    {getIconForPage(page.id)}
+                                                </span>
+                                                <span className="truncate">{page.name}</span>
+                                            </button>
+                                        ));
+                                    }
+
+                                    // Render grouped category (e.g., "Stages")
+                                    const isExpanded = expandedCategories[cat];
+                                    const isAnyActive = pages.some(p => p.id === activePageId);
+
+                                    return (
+                                        <div key={cat} className="space-y-1 mt-2">
+                                            <button
+                                                onClick={() => toggleCategory(cat)}
+                                                className={cn(
+                                                    "flex items-center justify-between w-full px-4 py-2 rounded-lg text-sm font-bold transition-all",
+                                                    isAnyActive ? "text-white" : "text-gray-500 hover:text-gray-300"
+                                                )}
+                                            >
+                                                <div className="flex items-center">
+                                                    <BriefcaseIcon className="h-4 w-4 mr-3 opacity-50" />
+                                                    <span>{cat}</span>
+                                                </div>
+                                                {isExpanded ? (
+                                                    <ChevronDownIcon className="h-3 w-3" />
+                                                ) : (
+                                                    <ChevronRightIcon className="h-3 w-3" />
+                                                )}
+                                            </button>
+                                            
+                                            {isExpanded && (
+                                                <div className="ml-4 pl-2 border-l border-gray-800 space-y-1 mt-1">
+                                                    {pages.map(page => (
+                                                        <button
+                                                            key={page.id}
+                                                            onClick={() => setActivePageId(page.id)}
+                                                            className={cn(
+                                                                "flex items-center w-full px-4 py-1.5 rounded-md text-[13px] font-medium transition-all",
+                                                                activePageId === page.id
+                                                                    ? "text-[#ec028b]"
+                                                                    : "text-gray-500 hover:text-gray-200"
+                                                            )}
+                                                        >
+                                                            <span className="truncate">{page.name}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
-                        {groupIdx < userGroups.length - 1 && (
-                            <div className="my-4 border-t border-gray-800/50 mx-2" />
-                        )}
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             <div className="p-4 border-t border-gray-800 bg-black/40">
