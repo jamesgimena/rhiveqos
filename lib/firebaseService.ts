@@ -169,8 +169,43 @@ const mapProjectToSnakeCase = (input: ProjectInput) => ({
 });
 
 export const projectService = {
-    getAll: () => firestoreService.getAllDocuments('projects'),
-    subscribe: (callback: (data: any[]) => void) => firestoreService.subscribeToDocuments('projects', callback),
+    getAll: async () => {
+        const p = await firestoreService.getAllDocuments('projects');
+        const l = await firestoreService.getAllDocuments('leads');
+        const combined = [...(p.data || []), ...(l.data || [])];
+        return { success: true, data: combined };
+    },
+    subscribe: (callback: (data: any[]) => void) => {
+        let projects: any[] = [];
+        let leads: any[] = [];
+        
+        const notify = () => callback([...projects, ...leads]);
+        
+        const unsubProjects = firestoreService.subscribeToDocuments('projects', (data) => {
+            projects = data;
+            notify();
+        });
+        
+        const unsubLeads = firestoreService.subscribeToDocuments('leads', (data) => {
+            leads = data;
+            notify();
+        });
+        
+        return () => {
+            unsubProjects();
+            unsubLeads();
+        };
+    },
+    subscribeAllWork: (callback: (data: any[]) => void) => {
+        let projects: any[] = [];
+        let leads: any[] = [];
+        const notify = () => callback([...projects, ...leads]);
+        
+        const unsubP = firestoreService.subscribeToDocuments('projects', (d) => { projects = d; notify(); });
+        const unsubL = firestoreService.subscribeToDocuments('leads', (d) => { leads = d; notify(); });
+        
+        return () => { unsubP(); unsubL(); };
+    },
     subscribeToRecentActivity: (callback: (data: any[]) => void, limitCount = 5) => {
         const q = query(
             collection(db, 'projects'),

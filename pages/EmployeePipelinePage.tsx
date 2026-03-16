@@ -56,7 +56,7 @@ const EmployeePipelinePage: React.FC = () => {
 
     const getProjectsForStage = (stage: typeof PIPELINE_STAGES[number]) => {
         return projects.filter(p => {
-            const cs = (p.current_stage || '').toLowerCase().trim();
+            const cs = (p.current_stage || p.status || '').toLowerCase().trim();
             return stage.match.some(m => m.toLowerCase() === cs);
         });
     };
