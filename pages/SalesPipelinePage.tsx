@@ -46,7 +46,7 @@ const SalesPipelinePage: React.FC = () => {
     const getProjectsByStage = (stage: Tab) => {
         const matchTerms = STAGE_MATCH[stage];
         return projects.filter(p => {
-            const cs = (p.current_stage || '').toLowerCase().trim();
+            const cs = (p.current_stage || p.status || '').toLowerCase().trim();
             return matchTerms.some(m => cs === m || cs.startsWith(m));
         });
     };
