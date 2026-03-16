@@ -29,7 +29,13 @@ import {
     ChevronDownIcon,
     ChevronRightIcon,
     Squares2x2Icon,
+<<<<<<< HEAD
     IdentificationIcon
+=======
+    IdentificationIcon,
+    ChartPieIcon,
+    ArrowLeftIcon
+>>>>>>> 4a4a5a98ca7ce94d8e7826863f12022af3f14b71
 } from './icons';
 import { cn } from '../lib/utils';
 
@@ -42,12 +48,16 @@ const getIconForPage = (id: string) => {
     if (id === 'P-04') return <CurrencyDollarIcon className="h-5 w-5" />;
     if (id === 'P-05') return <MapPinIcon className="h-5 w-5" />;
     if (id === 'P-07') return <KeyIcon className="h-5 w-5" />;
-    if (id === 'P-09') return <BuildingStorefrontIcon className="h-5 w-5" />;
-    if (id === 'P-10') return <BoltIcon className="h-5 w-5" />;
-    if (id === 'P-11') return <DocumentTextIcon className="h-5 w-5" />;
+    if (id === 'P-09') return <IdentificationIcon className="h-5 w-5" />;
+    if (id === 'P-10' || id === 'P-11') return <DocumentTextIcon className="h-5 w-5" />;
     if (id === 'P-12') return <CalculatorIcon className="h-5 w-5" />;
 
     // ADMIN (A-Series)
+    if (id === 'A-01') return <HomeIcon className="h-5 w-5" />;
+    if (id === 'A-02') return <UserIcon className="h-5 w-5" />;
+    if (id === 'A-03') return <CurrencyDollarIcon className="h-5 w-5" />;
+    if (id === 'A-04') return <BoltIcon className="h-5 w-5" />;
+    if (id === 'A-05') return <ListBulletIcon className="h-5 w-5" />;
     if (id.startsWith('A-')) return <ShieldCheckIcon className="h-5 w-5" />;
 
     // EMPLOYEE (E-Series)
@@ -55,27 +65,44 @@ const getIconForPage = (id: string) => {
     if (id === 'E-02') return <SearchIcon className="h-5 w-5" />;
     if (id === 'E-02a') return <UserIcon className="h-5 w-5" />;
     if (id === 'E-03') return <BoltIcon className="h-5 w-5" />;
-    if (id === 'E-04' || id === 'E-22') return <CalendarDaysIcon className="h-5 w-5" />;
-    if (id === 'E-05') return <ListBulletIcon className="h-5 w-5" />;
+    if (id === 'E-04') return <CalendarDaysIcon className="h-5 w-5" />;
+    if (id === 'E-05') return <ChartBarIcon className="h-5 w-5" />;
     if (id === 'E-06') return <MapPinIcon className="h-5 w-5" />;
     if (id === 'E-15') return <BriefcaseIcon className="h-5 w-5" />;
     if (id === 'E-16') return <CurrencyDollarIcon className="h-5 w-5" />;
     if (id === 'E-17') return <ChartBarIcon className="h-5 w-5" />;
+<<<<<<< HEAD
     if (id === 'E-18') return <DocumentTextIcon className="h-5 w-5" />;
     if (id === 'E-19' || id === 'A-05') return <ListBulletIcon className="h-5 w-5" />;
     if (id === 'E-23') return <PriceTagIcon className="h-5 w-5" />;
     if (id === 'E-25' || id === 'E-24') return <BuildingStorefrontIcon className="h-5 w-5" />;
     if (id === 'E-27' || id === 'P-12') return <CalculatorIcon className="h-5 w-5" />;
+=======
+    if (id === 'E-18') return <ChartPieIcon className="h-5 w-5" />;
+    if (id === 'E-19') return <ListBulletIcon className="h-5 w-5" />;
+    if (id === 'E-23') return <PriceTagIcon className="h-5 w-5" />;
+    if (id === 'E-25' || id === 'E-24') return <BuildingStorefrontIcon className="h-5 w-5" />;
+    if (id === 'E-27') return <CalculatorIcon className="h-5 w-5" />;
+>>>>>>> 4a4a5a98ca7ce94d8e7826863f12022af3f14b71
     if (id === 'E-38') return <BoltIcon className="h-5 w-5" />;
     if (id === 'E-29') return <ShieldCheckIcon className="h-5 w-5" />;
     if (id === 'E-32') return <WrenchIcon className="h-5 w-5" />;
     if (id === 'E-34') return <CurrencyDollarIcon className="h-5 w-5" />;
+<<<<<<< HEAD
     if (id === 'E-08' || id === 'E-07') return <UserIcon className="h-5 w-5" />;
     if (id === 'E-10' || id === 'E-09') return <UserIcon className="h-5 w-5" />;
     if (id === 'E-12' || id === 'E-11') return <MapPinIcon className="h-5 w-5" />;
     if (id === 'E-14') return <Squares2x2Icon className="h-5 w-5" />;
     if (id === 'E-21') return <IdentificationIcon className="h-5 w-5" />;
     if (id === 'E-22') return <CalendarDaysIcon className="h-5 w-5" />;
+=======
+    if (id === 'E-08') return <UserIcon className="h-5 w-5" />;
+    if (id === 'E-10') return <UserIcon className="h-5 w-5" />;
+    if (id === 'E-12') return <MapPinIcon className="h-5 w-5" />;
+    if (id === 'E-14') return <Squares2x2Icon className="h-5 w-5" />;
+    if (id === 'E-21') return <IdentificationIcon className="h-5 w-5" />;
+    if (id === 'E-22') return <ClockIcon className="h-5 w-5" />;
+>>>>>>> 4a4a5a98ca7ce94d8e7826863f12022af3f14b71
     
     // CUSTOMER
     if (id === 'C-01') return <HomeIcon className="h-5 w-5" />;
@@ -141,9 +168,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
                         <div key={groupIdx} className="mb-8 px-4">
                             {group.label && (
                                 <div className="px-4 mb-3">
+<<<<<<< HEAD
                                     <p className="text-[10px] font-black tracking-[0.2em] text-[#ec028b] uppercase opacity-70">
                                         {group.label}
                                     </p>
+=======
+                                    <span className="text-[10px] bg-gray-900/50 border border-gray-800 px-2 py-1 rounded-full text-gray-500 group-hover:text-[#ec028b] group-hover:border-[#ec028b]/30">
+                                        {group.label}
+                                    </span>
+>>>>>>> 4a4a5a98ca7ce94d8e7826863f12022af3f14b71
                                 </div>
                             )}
 
@@ -155,7 +188,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
                                                 key={page.id}
                                                 onClick={() => setActivePageId(page.id)}
                                                 className={cn(
+<<<<<<< HEAD
                                                     "flex items-center w-full px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+=======
+                                                    "flex items-center w-full px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
+>>>>>>> 4a4a5a98ca7ce94d8e7826863f12022af3f14b71
                                                     activePageId === page.id
                                                         ? "bg-[#ec028b]/20 text-[#ec028b] border border-[#ec028b]/30"
                                                         : "text-gray-400 hover:bg-gray-800 hover:text-white"
@@ -178,7 +215,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
                                             <button
                                                 onClick={() => toggleCategory(cat)}
                                                 className={cn(
+<<<<<<< HEAD
                                                     "flex items-center justify-between w-full px-4 py-2 rounded-lg text-sm font-bold transition-all",
+=======
+                                                    "flex items-center justify-between w-full px-4 py-2 rounded-full text-sm font-bold transition-all",
+>>>>>>> 4a4a5a98ca7ce94d8e7826863f12022af3f14b71
                                                     isAnyActive ? "text-white" : "text-gray-500 hover:text-gray-300"
                                                 )}
                                             >
@@ -186,11 +227,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
                                                     <BriefcaseIcon className="h-4 w-4 mr-3 opacity-50" />
                                                     <span>{cat}</span>
                                                 </div>
+<<<<<<< HEAD
                                                 {isExpanded ? (
                                                     <ChevronDownIcon className="h-3 w-3" />
                                                 ) : (
                                                     <ChevronRightIcon className="h-3 w-3" />
                                                 )}
+=======
+                                                <ChevronRightIcon className={cn(
+                                                    "h-3 w-3 transition-transform duration-300",
+                                                    isExpanded ? "rotate-90" : "rotate-0"
+                                                )} />
+>>>>>>> 4a4a5a98ca7ce94d8e7826863f12022af3f14b71
                                             </button>
                                             
                                             {isExpanded && (
@@ -200,7 +248,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
                                                             key={page.id}
                                                             onClick={() => setActivePageId(page.id)}
                                                             className={cn(
+<<<<<<< HEAD
                                                                 "flex items-center w-full px-4 py-1.5 rounded-md text-[13px] font-medium transition-all",
+=======
+                                                                "flex items-center w-full px-4 py-1.5 rounded-full text-[13px] font-medium transition-all",
+>>>>>>> 4a4a5a98ca7ce94d8e7826863f12022af3f14b71
                                                                 activePageId === page.id
                                                                     ? "text-[#ec028b]"
                                                                     : "text-gray-500 hover:text-gray-200"
@@ -232,8 +284,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
                 </div>
                 <button 
                     onClick={logout}
-                    className="w-full py-2 px-4 bg-gray-900 hover:bg-red-900/20 border border-gray-700 hover:border-red-500/50 rounded-lg text-gray-400 hover:text-red-400 text-sm transition-all"
+                    className="w-full py-2 px-4 bg-gray-900 hover:bg-red-900/20 border border-gray-700 hover:border-red-500/50 rounded-full text-gray-400 hover:text-red-400 text-sm transition-all flex items-center justify-center gap-2"
                 >
+                    <ArrowLeftIcon className="w-4 h-4" />
                     Sign Out
                 </button>
             </div>

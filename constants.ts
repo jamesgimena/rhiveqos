@@ -18,7 +18,17 @@ export const DRIP_EDGE_FEET_PER_PIECE = 10;
 // --- CRM NAVIGATION CONSTANTS ---
 
 export const PROJECT_STAGES: ProjectStage[] = [
-    'Lead', 'Estimate', 'Quote', 'Sign & Verify', 'Schedule', 'Pre-Installation', 'Install', 'Punch List', 'Invoicing', 'Completed', 'Past Customer'
+    'Stage 1: LEAD (Intake)',
+    'Stage 2: ESTIMATE (Property Data)',
+    'Stage 3: QUOTE (Pricing Options)',
+    'Stage 4: SIGN & VERIFY (Agreement)',
+    'Stage 5: SCHEDULE (Queue)',
+    'Stage 6: PRE-INSTALLATION (Prep)',
+    'Stage 7: INSTALL (In Progress)',
+    'Stage 8: PUNCH LIST (Quality Control)',
+    'Stage 9: INVOICING (Balance Due)',
+    'Stage 10: COMPLETED (Paid)',
+    'Stage 11: PAST CUSTOMER (Referral System)'
 ];
 
 export const PAGE_GROUPS: PageGroup[] = [
@@ -55,6 +65,7 @@ export const PAGE_GROUPS: PageGroup[] = [
         label: 'PIPELINE STAGES',
         pages: [
             { id: 'E-05', name: 'Pipeline Overview', userType: 'Employee' },
+<<<<<<< HEAD
             { id: 'E-26', name: '1. Lead Stage', userType: 'Employee', category: 'Stages' },
             { id: 'E-27', name: '2. Estimate Stage', userType: 'Employee', category: 'Stages' },
             { id: 'E-28', name: '3. Quote Stage', userType: 'Employee', category: 'Stages' },
@@ -66,6 +77,19 @@ export const PAGE_GROUPS: PageGroup[] = [
             { id: 'E-34', name: '9. Invoicing Stage', userType: 'Employee', category: 'Stages' },
             { id: 'E-36', name: '10. Completed', userType: 'Employee', category: 'Stages' },
             { id: 'E-37', name: 'Past Customer', userType: 'Employee', category: 'Stages' },
+=======
+            { id: 'E-26', name: 'Stage 1: LEAD (Intake)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-27', name: 'Stage 2: ESTIMATE (Property Data)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-28', name: 'Stage 3: QUOTE (Pricing Options)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-29', name: 'Stage 4: SIGN & VERIFY (Agreement)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-30', name: 'Stage 5: SCHEDULE (Queue)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-31', name: 'Stage 6: PRE-INSTALLATION (Prep)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-32', name: 'Stage 7: INSTALL (In Progress)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-33', name: 'Stage 8: PUNCH LIST (Quality Control)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-34', name: 'Stage 9: INVOICING (Balance Due)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-36', name: 'Stage 10: COMPLETED (Paid)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-37', name: 'Stage 11: PAST CUSTOMER (Referral System)', userType: 'Employee', category: 'Stages' },
+>>>>>>> 4a4a5a98ca7ce94d8e7826863f12022af3f14b71
         ]
     },
     {
