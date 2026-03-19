@@ -350,6 +350,16 @@ export const contactService = {
             return { success: false, error: error.message };
         }
     },
+    getByEmail: async (email: string) => {
+        try {
+            const q = query(collection(db, 'contacts'), where('email', '==', email.toLowerCase().trim()));
+            const snapshot = await getDocs(q);
+            if (snapshot.empty) return { success: false, error: 'No contact found with this email' };
+            return { success: true, data: snapshot.docs.map(mapDoc)[0] };
+        } catch (error: any) {
+            return { success: false, error: error.message };
+        }
+    },
     create: (data: any) => firestoreService.addDocument('contacts', data),
     update: (id: string, data: any) => firestoreService.updateDocument('contacts', id, data),
     delete: (id: string) => firestoreService.deleteDocument('contacts', id)
@@ -373,9 +383,20 @@ export const estimateService = {
 
 export const userService = {
     getAll: () => firestoreService.getAllDocuments('users'),
+    subscribe: (callback: (data: any[]) => void) => firestoreService.subscribeToDocuments('users', callback),
     create: (data: any) => firestoreService.addDocument('users', data),
     update: (id: string, data: any) => firestoreService.updateDocument('users', id, data),
-    delete: (id: string) => firestoreService.deleteDocument('users', id)
+    delete: (id: string) => firestoreService.deleteDocument('users', id),
+    getByEmail: async (email: string) => {
+        try {
+            const q = query(collection(db, 'users'), where('email', '==', email.toLowerCase().trim()));
+            const snapshot = await getDocs(q);
+            if (snapshot.empty) return { success: false, error: 'No user found with this email' };
+            return { success: true, data: snapshot.docs.map(mapDoc)[0] };
+        } catch (error: any) {
+            return { success: false, error: error.message };
+        }
+    }
 };
 
 export const dashboardService = {
