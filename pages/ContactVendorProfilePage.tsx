@@ -11,6 +11,7 @@ import { firestoreService } from '../lib/firebaseService';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { MapPinIcon } from '../components/icons';
+import ContactsListPage from './ContactsListPage';
 
 const MAPS_API_KEY = 'AIzaSyAyDim_1uOJy6rS_GZ-EwNKmJyCrvSvqRA';
 
@@ -41,34 +42,27 @@ const ContactVendorProfilePage: React.FC = () => {
     }, [selectedContactId]);
 
     const contractor = {
-        name: contactData ? (contactData.first_name || contactData.last_name ? `${contactData.first_name || ''} ${contactData.last_name || ''}`.trim() : contactData.name || 'Unknown Contact') : 'Quality & Roofing',
-        type: contactData?.role || 'Contractor',
-        address: contactData?.address || '456 Contractor Ave, Salt Lake City, UT 84101',
-        phone: contactData?.phone || '801-555-7890',
-        email: contactData?.email || 'contact@qualityroofing.com',
-        contacts: contactData?.contacts || [
-            { name: 'John Doe', title: 'Owner', phone: '801-555-7891', email: 'john.doe@qualityroofing.com' },
-            { name: 'Jane Smith', title: 'Lead Foreman', phone: '801-555-7892', email: 'jane.s@qualityroofing.com' }
-        ],
-        documents: contactData?.documents || [
-            { name: 'W-9 Form', status: 'on-file' as const },
-            { name: 'License', status: 'on-file' as const },
-            { name: 'Workers Comp', status: 'expired' as const },
-            { name: 'Liability Insurance', status: 'on-file' as const }
-        ],
-        projects: contactData?.projects || [
-            { name: 'Henderson Residence', address: '123 Maple St, Denver, CO', price: '$12,500', description: 'Full asphalt shingle replacement. Crew was efficient and clean.', galleries: ['Henderson 1', 'Henderson 2', 'Henderson 3'] },
-            { name: 'Galleria Mall Roof', address: '789 Pine Ln, Aurora, CO', price: '$8,400', description: 'Partial repair on the west wing. Good work on matching existing materials.', galleries: ['Galleria 1', 'Galleria 2'] }
-        ]
+        name: contactData ? (contactData.first_name || contactData.last_name ? `${contactData.first_name || ''} ${contactData.last_name || ''}`.trim() : contactData.name || 'Unknown Contact') : 'Unknown Contact',
+        type: contactData?.role || 'Contact',
+        address: contactData?.address || '',
+        phone: contactData?.phone || '',
+        email: contactData?.email || '',
+        contacts: contactData?.contacts || [],
+        documents: contactData?.documents || [],
+        projects: contactData?.projects || []
     };
 
     const satUrl = contractor.address
         ? `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(contractor.address)}&zoom=18&size=800x400&maptype=satellite&markers=color:red%7C${encodeURIComponent(contractor.address)}&key=${MAPS_API_KEY}`
         : null;
 
+    if (!selectedContactId) {
+        return <ContactsListPage />;
+    }
+
     if (loading) {
         return (
-            <PageContainer title="Loading Profile..." description="Fetching data from Firebase">
+            <PageContainer title="Loading Contact Data..." description="Fetching data from Firebase">
                 <div className="flex items-center justify-center py-20">
                     <div className="w-10 h-10 border-4 border-[#ec028b] border-t-transparent rounded-full animate-spin"></div>
                 </div>

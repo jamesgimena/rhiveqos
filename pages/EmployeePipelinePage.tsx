@@ -35,7 +35,11 @@ interface FirebaseProject {
     [key: string]: any;
 }
 
-const EmployeePipelinePage: React.FC = () => {
+interface EmployeePipelinePageProps {
+    hideLeads?: boolean;
+}
+
+const EmployeePipelinePage: React.FC<EmployeePipelinePageProps> = ({ hideLeads = false }) => {
     const { setActivePageId, setSelectedProjectId } = useNavigation();
     const [projects, setProjects] = useState<FirebaseProject[]>([]);
     const [loading, setLoading] = useState(true);
@@ -105,7 +109,7 @@ const EmployeePipelinePage: React.FC = () => {
             </header>
 
             <main className="relative z-20 flex-1 flex overflow-x-auto overflow-y-hidden p-6 gap-6 scrollbar-hide">
-                {PIPELINE_STAGES.map((stage) => {
+                {PIPELINE_STAGES.filter(stage => !hideLeads || stage.label !== 'Lead').map((stage) => {
                     const stageProjects = getProjectsForStage(stage);
                     return (
                         <div key={stage.label} className="flex-none w-72 flex flex-col h-full">

@@ -8,6 +8,7 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { UserIcon, BriefcaseIcon, MailIcon } from '../components/icons';
 import { getStagePageId } from '../lib/utils';
+import AccountsListPage from './AccountsListPage';
 
 const CompanyPage: React.FC = () => {
     const { selectedAccountId, setActivePageId, setSelectedProjectId } = useNavigation();
@@ -23,7 +24,7 @@ const CompanyPage: React.FC = () => {
             return;
         }
 
-        const docRef = doc(db, 'users', selectedAccountId);
+        const docRef = doc(db, 'accounts', selectedAccountId);
         const unsub = onSnapshot(docRef, (snap) => {
             if (snap.exists()) {
                 setAccount({ id: snap.id, ...snap.data() });
@@ -57,7 +58,7 @@ const CompanyPage: React.FC = () => {
 
     if (loading) {
         return (
-            <PageContainer title="Account Profile" description="Loading account data...">
+            <PageContainer title="Account" description="Loading account data...">
                 <div className="py-20 flex justify-center">
                     <div className="w-10 h-10 border-4 border-[#ec028b] border-t-transparent rounded-full animate-spin"></div>
                 </div>
@@ -66,17 +67,11 @@ const CompanyPage: React.FC = () => {
     }
 
     if (!selectedAccountId || (!account && !loading)) {
-        return (
-            <PageContainer title="Account Profile" description="Select an account to view details.">
-                <div className="p-10 text-center text-gray-500 border border-dashed border-gray-800 rounded-xl">
-                    No active account selected from lead pipeline.
-                </div>
-            </PageContainer>
-        );
+        return <AccountsListPage />;
     }
 
     return (
-        <PageContainer title={account?.name || account?.displayName || 'Unnamed Account'} description={`${account?.role || 'Corporate Client'} Profile • Live Sync`}>
+        <PageContainer title={account?.name || account?.displayName || 'Unnamed Account'} description={`${account?.role || 'Corporate Client'} Data • Live Sync`}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* Left Column: Account Details */}
                 <div className="md:col-span-1 space-y-8">

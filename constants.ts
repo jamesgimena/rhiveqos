@@ -88,11 +88,11 @@ export const PAGE_GROUPS: PageGroup[] = [
         userType: 'Employee',
         label: 'RECORD PROFILES',
         pages: [
-            { id: 'E-08', name: 'Account Profile', userType: 'Employee' },
-            { id: 'E-10', name: 'Contact Profile', userType: 'Employee' },
-            { id: 'E-12', name: 'Property Profile', userType: 'Employee' },
-            { id: 'E-15', name: 'Project Profile', userType: 'Employee' },
-            { id: 'E-25', name: 'Vendor Profiles', userType: 'Employee' },
+            { id: 'E-08', name: 'Account', userType: 'Employee' },
+            { id: 'E-10', name: 'Contact', userType: 'Employee' },
+            { id: 'E-12', name: 'Property', userType: 'Employee' },
+            { id: 'E-15', name: 'Project', userType: 'Employee' },
+            { id: 'E-25', name: 'Vendor', userType: 'Employee' },
         ]
     },
     {
