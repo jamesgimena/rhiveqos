@@ -1,282 +1,162 @@
 
 import React, { useState, useEffect } from 'react';
 import PageContainer from '../components/PageContainer';
-import Card from '../components/Card';
-import CollapsibleSection from '../components/CollapsibleSection';
-import { MapPinIcon, BriefcaseIcon, UserIcon, BuildingStorefrontIcon } from '../components/icons';
+import Button from '../components/Button';
 import { useNavigation } from '../contexts/NavigationContext';
-import { propertyService, contactService, projectService } from '../lib/firebaseService';
-import { cn } from '../lib/utils';
-
-const MAPS_API_KEY = 'AIzaSyAyDim_1uOJy6rS_GZ-EwNKmJyCrvSvqRA';
-
-const stageBadgeColor = (stage?: string) => {
-    const s = (stage || '').toLowerCase();
-    if (s.includes('lead')) return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30';
-    if (s.includes('estimate')) return 'bg-blue-500/10 text-blue-400 border-blue-500/30';
-    if (s.includes('quote')) return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30';
-    if (s.includes('sign')) return 'bg-purple-500/10 text-purple-400 border-purple-500/30';
-    if (s.includes('schedule')) return 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30';
-    if (s.includes('install')) return 'bg-orange-500/10 text-orange-400 border-orange-500/30';
-    if (s.includes('invoic')) return 'bg-green-500/10 text-green-400 border-green-500/30';
-    if (s.includes('complet') || s.includes('past')) return 'bg-gray-500/10 text-gray-300 border-gray-600/30';
-    return 'bg-gray-800 text-gray-400 border-gray-700';
-};
+import { useMockDB } from '../contexts/MockDatabaseContext';
+import { propertyService, projectService } from '../lib/firebaseService';
+import { MapPinIcon, BuildingStorefrontIcon, ChevronRightIcon, PlusIcon } from '../components/icons';
 
 const PropertyPage: React.FC = () => {
-    const { selectedPropertyId, setActivePageId, setSelectedContactId } = useNavigation();
+    const { setActivePageId, setSelectedPropertyId } = useNavigation();
+    const { currentUser } = useMockDB();
 
-    const handleContactClick = (contactId: string) => {
-        setSelectedContactId(contactId);
-        setActivePageId('E-10'); // Redirect to Contact Vendor Profile Page
-    };
-
-    const [property, setProperty] = useState<any>(null);
-    const [contacts, setContacts] = useState<any[]>([]);
-    const [projects, setProjects] = useState<any[]>([]);
     const [allProperties, setAllProperties] = useState<any[]>([]);
+    const [allProjects, setAllProjects] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Load all properties and subscribe to updates
+    // Fetch live properties and projects
     useEffect(() => {
-        setLoading(true);
-        const unsubProperties = propertyService.subscribe((data: any[]) => {
-            setAllProperties(data);
-            setLoading(false);
+        let isMounted = true;
+        
+        const unsubProps = propertyService.subscribe((data: any[]) => {
+            if (isMounted) setAllProperties(data);
         });
-        return () => unsubProperties();
+
+        const unsubProjs = projectService.subscribe((data: any[]) => {
+            if (isMounted) setAllProjects(data);
+        });
+
+        // Simulate short loading state
+        const timer = setTimeout(() => {
+            if (isMounted) setLoading(false);
+        }, 600);
+
+        return () => {
+            isMounted = false;
+            unsubProps();
+            unsubProjs();
+            clearTimeout(timer);
+        };
     }, []);
 
-    // Resolve the active property (selected or fallback to most recent)
-    useEffect(() => {
-        if (allProperties.length === 0) return;
-        if (selectedPropertyId) {
-            const found = allProperties.find(p => p.id === selectedPropertyId);
-            setProperty(found || allProperties[0]);
-        } else {
-            setProperty(allProperties[0]);
+    const isLeadStage = (stage?: string) => {
+        if (!stage) return true;
+        const s = stage.toLowerCase().trim();
+        return s === 'lead' || s.includes('stage 1');
+    };
+
+    // Filter properties based on role and project stage
+    const getVisibleProperties = () => {
+        if (!currentUser) return [];
+
+        let roleFiltered = allProperties;
+        const role = currentUser.role;
+        
+        // For customers or external users, we trace their properties through their projects
+        if (role !== 'Admin' && role !== 'Super Admin' && role !== 'Employee') {
+            const myProjects = allProjects.filter(p => p.user_id === currentUser.id || p.account_id === currentUser.id);
+            const myPropertyIds = new Set(myProjects.map(p => p.property_id).filter(Boolean));
+            roleFiltered = allProperties.filter(prop => myPropertyIds.has(prop.id));
         }
-    }, [allProperties, selectedPropertyId]);
 
-    // Load contacts & projects linked to this property
-    useEffect(() => {
-        if (!property) return;
-
-        // Filter contacts by property_id
-        const unsubContacts = contactService.getAll().then(res => {
-            if (res.success) {
-                const filtered = (res.data as any[]).filter(
-                    c => c.property_id === property.id || c.project_id === property.id
-                );
-                setContacts(filtered);
-            }
+        // Only show properties that have at least one project NOT in the Lead stage
+        return roleFiltered.filter(prop => {
+            const propProjects = allProjects.filter(p => p.property_id === prop.id);
+            if (propProjects.length === 0) return false;
+            return propProjects.some(p => !isLeadStage(p.current_stage));
         });
+    };
 
-        // Subscribe to projects and filter by property_id
-        const unsubProjects = projectService.subscribe((data: any[]) => {
-            const filtered = data.filter(p => p.property_id === property.id);
-            setProjects(filtered);
-        });
+    const properties = getVisibleProperties();
 
-        return () => unsubProjects();
-    }, [property]);
-
-    const addressForMap = property?.address_full || property?.property_address;
-    
-    const satUrl = (property?.latitude && property?.longitude)
-        ? `https://maps.googleapis.com/maps/api/staticmap?center=${property.latitude},${property.longitude}&zoom=18&size=800x400&maptype=satellite&markers=color:red%7C${property.latitude},${property.longitude}&key=${MAPS_API_KEY}`
-        : addressForMap
-            ? `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(addressForMap)}&zoom=18&size=800x400&maptype=satellite&markers=color:red%7C${encodeURIComponent(addressForMap)}&key=${MAPS_API_KEY}`
-            : null;
+    const handleSelectProperty = (id: string) => {
+        setSelectedPropertyId(id);
+        // E-12 is the exact property profile page we just created/renamed. E-11 is currently generic. Let's assume we map E-11 to this list, and clicking goes to E-12 profile. Wait, if E-11 is list and E-12 is profile, we route to E-12 here.
+        setActivePageId('E-12'); 
+    };
 
     if (loading) {
         return (
-            <PageContainer title="Property Profile" description="Loading property data from Firebase...">
-                <div className="space-y-6 animate-pulse">
-                    <div className="h-80 bg-gray-900 rounded-xl" />
-                    <div className="grid grid-cols-3 gap-6">
-                        <div className="h-40 bg-gray-900 rounded-xl" />
-                        <div className="h-40 bg-gray-900 rounded-xl" />
-                        <div className="h-40 bg-gray-900 rounded-xl" />
-                    </div>
+            <PageContainer title="My Properties" description="Loading property records...">
+                <div className="flex justify-center py-20">
+                    <div className="w-10 h-10 border-4 border-[#ec028b] border-t-transparent rounded-full animate-spin"></div>
                 </div>
             </PageContainer>
         );
     }
-
-    if (!property) {
-        return (
-            <PageContainer title="Property Profile" description="No property selected.">
-                <div className="flex flex-col items-center justify-center py-24 text-center">
-                    <MapPinIcon className="w-16 h-16 text-gray-700 mb-4" />
-                    <p className="text-gray-500 text-lg font-bold uppercase tracking-widest">No Properties Found</p>
-                    <p className="text-gray-600 text-sm mt-2">Properties added via Customer Input will appear here.</p>
-                </div>
-            </PageContainer>
-        );
-    }
-
-    const addressTitle = property.address_full || [property.property_address, property.city, property.state, property.zip].filter(Boolean).join(', ') || 'Unknown Address';
 
     return (
-        <PageContainer
-            title={addressTitle}
-            description={`${property.type || 'Property'} Profile • Live from Firebase`}
+        <PageContainer 
+            title={currentUser?.role === 'Admin' || currentUser?.role === 'Employee' ? "All Properties" : "My Properties"} 
+            description="Manage and track real estate assets tied to your projects."
         >
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-                {/* Satellite Map */}
-                <div className="lg:col-span-2">
-                    <Card title="Location">
-                        <div className="relative h-80 bg-gray-900 rounded-lg overflow-hidden">
-                            {satUrl ? (
-                                <div className="w-full h-full">
-                                    <iframe
-                                        width="100%"
-                                        height="100%"
-                                        style={{ border: 0 }}
-                                        loading="lazy"
-                                        allowFullScreen
-                                        referrerPolicy="no-referrer-when-downgrade"
-                                        src={`https://www.google.com/maps/embed/v1/view?key=${MAPS_API_KEY}&center=${property?.latitude || 33.3286},${property?.longitude || -115.8434}&zoom=15&maptype=satellite`}
-                                    ></iframe>
-                                    {/* Floating Address Label over Pin (Since we use view, we center the label) */}
-                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[20px] pointer-events-none z-10">
-                                        <div className="bg-black/90 backdrop-blur-lg border border-[#ec028b] px-3 py-1.5 rounded shadow-[0_0_20px_rgba(236,2,139,0.4)] flex flex-col items-center animate-in fade-in zoom-in duration-500">
-                                            <p className="text-white font-black text-[10px] whitespace-nowrap uppercase tracking-tighter">
-                                                {addressTitle}
-                                            </p>
-                                            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-[#ec028b]"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                    <MapPinIcon className="w-16 h-16 text-gray-700" />
-                                    <p className="absolute text-gray-500 text-sm">No coordinates on file</p>
-                                </div>
-                            )}
-                            <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                            <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-md border border-gray-700 px-4 py-3 rounded-lg"
-                                style={{ clipPath: 'polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px)' }}>
-                                <p className="text-[9px] text-[#ec028b] font-black uppercase tracking-widest mb-0.5">Property Address</p>
-                                <p className="text-white font-bold text-sm">{addressTitle}</p>
-                                {property.latitude && property.longitude && (
-                                    <p className="text-gray-500 text-[10px] font-mono mt-1">
-                                        {Number(property.latitude).toFixed(4)}, {Number(property.longitude).toFixed(4)}
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                    </Card>
-                </div>
-
-                {/* Property Details */}
-                <div className="space-y-6">
-                    <Card title="Property Details">
-                        <div className="space-y-4">
-                            {[
-                                { label: 'Type', value: property.type },
-                                { label: 'City', value: property.city },
-                                { label: 'State', value: property.state },
-                                { label: 'ZIP', value: property.zip },
-                            ].map(({ label, value }) => value ? (
-                                <div key={label} className="flex justify-between items-center py-2 border-b border-gray-800/50 last:border-0">
-                                    <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest">{label}</span>
-                                    <span className="text-white font-bold text-sm">{value}</span>
-                                </div>
-                            ) : null)}
-                            {property.features && property.features.length > 0 && (
-                                <div>
-                                    <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-2">Features</p>
-                                    <div className="flex flex-wrap gap-2">
-                                        {property.features.map((f: string) => (
-                                            <span key={f} className="text-[9px] bg-gray-900 border border-gray-800 px-2 py-1 rounded text-gray-400 uppercase font-black tracking-tight">
-                                                {f}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </Card>
-
-                    {/* Associated Contacts */}
-                    <Card title="Associated Contacts">
-                        {contacts.length === 0 ? (
-                            <div className="py-6 text-center">
-                                <UserIcon className="w-8 h-8 text-gray-700 mx-auto mb-2" />
-                                <p className="text-gray-600 text-xs italic">No contacts linked yet</p>
-                            </div>
-                        ) : (
-                            <ul className="space-y-3">
-                                {contacts.map((c: any) => (
-                                    <li 
-                                        key={c.id} 
-                                        onClick={() => handleContactClick(c.id)}
-                                        className="flex items-center gap-3 p-3 bg-gray-900/40 border border-gray-800/50 rounded-lg cursor-pointer hover:border-[#ec028b]/50 hover:bg-gray-900/60 transition-all group"
-                                    >
-                                        <div className="w-9 h-9 rounded-lg bg-gray-900 border border-gray-800 flex items-center justify-center text-[#ec028b] font-black text-sm shrink-0 group-hover:border-[#ec028b]/50 transition-all">
-                                            {(c.first_name || c.name || '?')[0]?.toUpperCase()}
-                                        </div>
-                                        <div>
-                                            <p className="text-white font-bold text-sm">
-                                                {c.first_name || ''} {c.last_name || c.name || ''}
-                                            </p>
-                                            <p className="text-gray-500 text-[10px] uppercase tracking-wider">{c.role || 'Contact'}</p>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </Card>
-                </div>
-
-                {/* Project History */}
-                <div className="lg:col-span-3">
-                    <CollapsibleSection title={`Project History (${projects.length})`}>
-                        {projects.length === 0 ? (
-                            <div className="py-8 text-center text-gray-600 italic text-sm">
-                                No projects found for this property in Firebase.
-                            </div>
-                        ) : (
-                            <div className="space-y-3 p-4">
-                                {projects.map((proj: any) => (
-                                    <div key={proj.id}
-                                        className="flex items-center justify-between p-4 bg-gray-900/40 border border-gray-800/50 rounded-xl hover:border-[#ec028b]/30 transition-all group">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-lg bg-gray-900 border border-gray-800 flex items-center justify-center text-[#ec028b] group-hover:border-[#ec028b]/50 transition-all">
-                                                <BriefcaseIcon className="w-5 h-5" />
-                                            </div>
-                                            <div>
-                                                <p className="text-white font-bold">{proj.name || 'Unnamed Project'}</p>
-                                                <p className="text-gray-500 text-xs font-mono mt-0.5">
-                                                    {proj.project_type || ''} • {proj.id.slice(-8)}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            {proj.current_stage && (
-                                                <span className={cn(
-                                                    'text-[10px] px-2 py-1 rounded border font-black uppercase tracking-widest',
-                                                    stageBadgeColor(proj.current_stage)
-                                                )}>
-                                                    {proj.current_stage}
-                                                </span>
-                                            )}
-                                            {proj.quote?.total && (
-                                                <span className="font-mono text-sm font-bold text-[#ec028b]">
-                                                    ${proj.quote.total.toLocaleString()}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </CollapsibleSection>
-                </div>
+            <div className="mb-6 flex justify-between items-center">
+                <p className="text-gray-400 text-sm">
+                    Showing <span className="font-bold text-white">{properties.length}</span> recorded properties.
+                </p>
+                <Button className="flex items-center gap-2 shadow-[0_0_15px_rgba(236,2,139,0.2)]">
+                    <PlusIcon className="w-4 h-4" />
+                    Add Property
+                </Button>
             </div>
+
+            {properties.length === 0 ? (
+                <div className="flex flex-col items-center justify-center p-16 border border-dashed border-gray-800 rounded-xl bg-gray-900/30">
+                    <BuildingStorefrontIcon className="w-16 h-16 text-gray-700 mb-4" />
+                    <p className="text-gray-400 font-bold uppercase tracking-widest text-lg">No Properties Found</p>
+                    <p className="text-gray-500 text-sm mt-2 text-center max-w-sm">
+                        You do not have any properties associated with your account yet. Properties are automatically added when a project is started.
+                    </p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {properties.map(property => {
+                        const addressTitle = property.address_full || [property.property_address, property.city, property.state, property.zip].filter(Boolean).join(', ') || 'Unknown Address';
+                        const relatedProjectsCount = allProjects.filter(p => p.property_id === property.id).length;
+
+                        return (
+                            <div 
+                                key={property.id} 
+                                onClick={() => handleSelectProperty(property.id)}
+                                className="group relative bg-gray-900/40 border border-gray-800 rounded-2xl p-6 cursor-pointer hover:border-[#ec028b]/60 transition-all duration-300 hover:shadow-[0_0_30px_rgba(236,2,139,0.1)] overflow-hidden"
+                            >
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#ec028b] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                
+                                <div className="flex items-start justify-between">
+                                    <div className="w-12 h-12 bg-black border border-gray-800 rounded-xl flex items-center justify-center group-hover:bg-[#ec028b]/10 group-hover:border-[#ec028b]/30 transition-colors">
+                                        <MapPinIcon className="w-6 h-6 text-gray-400 group-hover:text-[#ec028b] transition-colors" />
+                                    </div>
+                                    <div className="text-right">
+                                        <span className="text-[10px] bg-gray-900 border border-gray-800 px-2 py-0.5 rounded font-black uppercase tracking-widest text-gray-400">
+                                            {property.type || 'Property'}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div className="mt-5 space-y-1">
+                                    <h3 className="text-white font-bold text-lg line-clamp-1">{property.property_address || addressTitle.split(',')[0]}</h3>
+                                    <p className="text-gray-500 text-xs truncate">
+                                        {property.city ? `${property.city}, ${property.state} ${property.zip}` : addressTitle}
+                                    </p>
+                                </div>
+
+                                <div className="mt-6 pt-4 border-t border-gray-800/50 flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <span className="flex items-center gap-1.5 text-xs text-gray-400">
+                                            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                                            {relatedProjectsCount} Project{relatedProjectsCount !== 1 ? 's' : ''}
+                                        </span>
+                                    </div>
+                                    <div className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center text-gray-500 group-hover:border-[#ec028b] group-hover:text-[#ec028b] group-hover:bg-[#ec028b]/10 transition-colors">
+                                        <ChevronRightIcon className="w-4 h-4" />
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
         </PageContainer>
     );
 };

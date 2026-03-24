@@ -11,6 +11,7 @@ const createIcon = (path: string): React.FC<React.SVGProps<SVGSVGElement>> => (p
 );
 
 export const DefaultIcon = createIcon("M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z");
+export const CommandLineIcon = createIcon("M4 17l6-6-6-6 M12 19h8");
 export const I = DefaultIcon;
 
 // Core Icons with distinct paths
@@ -77,8 +78,8 @@ export const SatelliteIcon = DefaultIcon;
 export const ShareIcon = I;
 export const PaperAirplaneIcon = I;
 export const LinkIcon = I;
-export const EyeIcon = I;
-export const EyeSlashIcon = I;
+export const EyeIcon = createIcon("M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z");
+export const EyeSlashIcon = createIcon("M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24 M1 1l22 22");
 export const AdjustmentsVerticalIcon = I;
 export const AdjustmentsHorizontalIcon = I;
 export const FunnelIcon = I;
@@ -188,7 +189,7 @@ export const Trash2Icon = I;
 export const XCircleIcon = I;
 export const ExclamationTriangle = I;
 export const QuestionMarkCircle = I;
-export const ShieldCheck = I;
+export const ShieldCheck = createIcon("M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z M9 12l2 2 4-4");
 export const ShieldCheckIcon = ShieldCheck;
 export const BriefcaseIcon2 = I;
 export const ChartBar = I;

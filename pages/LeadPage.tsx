@@ -87,11 +87,17 @@ const LeadPage: React.FC = () => {
 
     // --- LIST VIEW LOGIC ---
     
-    // Group projects by Account User (using user_id or account_id)
+    // Group ONLY lead projects by Account User
     const groupedProjects = useMemo(() => {
         const map = new Map<string, any[]>();
         
-        projects.forEach(p => {
+        // Filter only projects in the lead stage
+        const leadsOnly = projects.filter(p => {
+            const cs = (p.current_stage || '').toLowerCase().trim();
+            return cs === 'lead' || cs.includes('stage 1');
+        });
+
+        leadsOnly.forEach(p => {
             const userId = p.user_id || p.account_id || p.owner_id || 'unassigned';
             if (!map.has(userId)) map.set(userId, []);
             map.get(userId)!.push(p);
