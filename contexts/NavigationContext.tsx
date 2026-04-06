@@ -1,9 +1,20 @@
 
 import React, { createContext, useContext, useState } from 'react';
 
+// Profile list pages — navigating to these clears the matched selectedId
+const PROFILE_LIST_CLEAR_MAP: Record<string, string[]> = {
+    'E-08': ['selectedAccountId'],
+    'E-10': ['selectedContactId'],
+    'E-11': ['selectedPropertyId'],
+    'E-12': ['selectedPropertyId'],
+    'E-15': ['selectedProjectId'],
+};
+
 interface NavigationContextType {
     activePageId: string;
     setActivePageId: (id: string) => void;
+    /** Navigate to a page from the sidebar — clears related selectedIds so list view is shown */
+    navigateToPage: (id: string) => void;
     selectedPropertyId: string | null;
     setSelectedPropertyId: (id: string | null) => void;
     selectedProjectId: string | null;
@@ -23,10 +34,21 @@ export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
     const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
 
+    /** Used by Sidebar: clears related selectedId(s) so profile pages show their list */
+    const navigateToPage = React.useCallback((id: string) => {
+        const toClear = PROFILE_LIST_CLEAR_MAP[id] || [];
+        if (toClear.includes('selectedPropertyId')) setSelectedPropertyId(null);
+        if (toClear.includes('selectedProjectId')) setSelectedProjectId(null);
+        if (toClear.includes('selectedContactId')) setSelectedContactId(null);
+        if (toClear.includes('selectedAccountId')) setSelectedAccountId(null);
+        setActivePageId(id);
+    }, []);
+
     return (
         <NavigationContext.Provider value={{
             activePageId,
             setActivePageId,
+            navigateToPage,
             selectedPropertyId,
             setSelectedPropertyId,
             selectedProjectId,
