@@ -112,7 +112,8 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
     const { currentUser, logout } = useMockDB();
-    const { activePageId, setActivePageId } = useNavigation();
+    const { activePageId, navigateToPage } = useNavigation();
+
     
     // State to track expanded categories
     const [expandedCategories, setExpandedCategories] = React.useState<Record<string, boolean>>({
@@ -175,7 +176,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
                                         return pages.map(page => (
                                             <button
                                                 key={page.id}
-                                                onClick={() => setActivePageId(page.id)}
+                                                onClick={() => navigateToPage(page.id)}
+
                                                 className={cn(
                                                     "flex items-center w-full px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
                                                     activePageId === page.id
@@ -219,7 +221,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
                                                     {pages.map(page => (
                                                         <button
                                                             key={page.id}
-                                                            onClick={() => setActivePageId(page.id)}
+                                                            onClick={() => navigateToPage(page.id)}
+
                                                             className={cn(
                                                                 "flex items-center w-full px-4 py-1.5 rounded-full text-[13px] font-medium transition-all",
                                                                 activePageId === page.id
