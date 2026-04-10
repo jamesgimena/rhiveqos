@@ -1,4 +1,14 @@
 
+
+// PlexusShape types
+export interface Dot {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  radius: number;
+}
+
 export interface Place {
   address: string;
   latitude: number;
@@ -157,85 +167,73 @@ export interface Pricing {
 export type UserType = 'Admin' | 'Employee' | 'Customer' | 'Contractor' | 'Supplier' | 'Public' | 'Super Admin';
 
 export interface User {
-    id: string;
-    name: string;
-    role: UserType;
-    email?: string;
-    phone?: string;
-    avatarUrl?: string;
-    password_hash?: string;
+  id: string;
+  name: string;
+  role: UserType;
+  email?: string;
+  phone?: string;
+  avatarUrl?: string;
 }
 
 export interface Project {
-    _id: string;
-    name: string;
-    property_id: string;
-    account_id: string;
-    project_type: 'Residential' | 'Commercial' | 'Government';
-    current_stage: string;
-    status: string;
-    last_updated?: string;
-    assigned_contractor_id?: string;
-    quote?: {
-        total: number;
-        status: 'Draft' | 'Sent' | 'Approved' | 'Rejected';
-        items: { name: string; cost: number }[];
-    };
-    compliance?: {
-        solicitation_num: string;
-        wage_determination: string;
-        certified_payroll_status: boolean;
-    };
+  _id: string;
+  name: string;
+  property_id: string;
+  account_id: string;
+  project_type: 'Residential' | 'Commercial' | 'Government';
+  current_stage: string;
+  status: string;
+  last_updated?: string;
+  assigned_contractor_id?: string;
+  quote?: {
+    total: number;
+    status: 'Draft' | 'Sent' | 'Approved' | 'Rejected';
+    items: { name: string; cost: number }[];
+  };
+  compliance?: {
+    solicitation_num: string;
+    wage_determination: string;
+    certified_payroll_status: boolean;
+  };
 }
 
 export interface Property {
-    _id: string;
-    address_full: string;
-    owner_id: string;
-    type: 'Residential' | 'Commercial' | 'Government';
-    coordinates: { lat: number; lng: number };
-    features: string[];
+  _id: string;
+  address_full: string;
+  owner_id: string;
+  type: 'Residential' | 'Commercial' | 'Government';
+  coordinates: { lat: number; lng: number };
+  features: string[];
 }
 
-export type ProjectStage = 
-    | 'Stage 1: LEAD (Intake)'
-    | 'Stage 2: ESTIMATE (Property Data)'
-    | 'Stage 3: QUOTE (Pricing Options)'
-    | 'Stage 4: SIGN & VERIFY (Agreement)'
-    | 'Stage 5: SCHEDULE (Queue)'
-    | 'Stage 6: PRE-INSTALLATION (Prep)'
-    | 'Stage 7: INSTALL (In Progress)'
-    | 'Stage 8: PUNCH LIST (Quality Control)'
-    | 'Stage 9: INVOICING (Balance Due)'
-    | 'Stage 10: COMPLETED (Paid)'
-    | 'Stage 11: PAST CUSTOMER (Referral System)';
+export type ProjectStage =
+  | 'Lead'
+  | 'Estimate'
+  | 'Quote'
+  | 'Sign & Verify'
+  | 'Schedule'
+  | 'Pre-Installation'
+  | 'Install'
+  | 'Punch List'
+  | 'Invoicing'
+  | 'Completed'
+  | 'Past Customer';
 
 export const PROJECT_STAGES_ORDER: ProjectStage[] = [
-    'Stage 1: LEAD (Intake)',
-    'Stage 2: ESTIMATE (Property Data)',
-    'Stage 3: QUOTE (Pricing Options)',
-    'Stage 4: SIGN & VERIFY (Agreement)',
-    'Stage 5: SCHEDULE (Queue)',
-    'Stage 6: PRE-INSTALLATION (Prep)',
-    'Stage 7: INSTALL (In Progress)',
-    'Stage 8: PUNCH LIST (Quality Control)',
-    'Stage 9: INVOICING (Balance Due)',
-    'Stage 10: COMPLETED (Paid)',
-    'Stage 11: PAST CUSTOMER (Referral System)'
+  'Lead', 'Estimate', 'Quote', 'Sign & Verify', 'Schedule', 'Pre-Installation', 'Install', 'Punch List', 'Invoicing', 'Completed', 'Past Customer'
 ];
 
 export interface Page {
-    id: string;
-    name: string;
-    userType: UserType | 'All';
-    description?: string;
-    category?: string;
+  id: string;
+  name: string;
+  userType: UserType | 'All';
+  description?: string;
+  parentId?: string;
 }
 
 export interface PageGroup {
-    userType: UserType | 'All';
-    label?: string;
-    pages: Page[];
+  userType: UserType | 'All';
+  pages: Page[];
 }
 
 // New Types for Estimates
@@ -246,21 +244,21 @@ export interface Point3D {
 }
 
 export interface RoofSegment {
-    pitchDegrees: number;
-    azimuthDegrees: number;
-    stats: {
-        areaMeters: number;
-    };
-    vertices: Point3D[];
+  pitchDegrees: number;
+  azimuthDegrees: number;
+  stats: {
+    areaMeters: number;
+  };
+  vertices: Point3D[];
 }
 
 export interface SolarApiData {
-    solarPotential: {
-        wholeRoofStats: {
-            areaMeters: number;
-        };
-        roofSegmentStats: RoofSegment[];
+  solarPotential: {
+    wholeRoofStats: {
+      areaMeters: number;
     };
+    roofSegmentStats: RoofSegment[];
+  };
 }
 
 export interface Edge {
@@ -292,21 +290,21 @@ export interface RoofReport {
     dripEdge: number;
   };
   pitchAnalysis: {
-      pitch: number;
-      areaSqFt: number;
+    pitch: number;
+    areaSqFt: number;
   }[];
 }
 
 export interface Contact {
-    id: string;
-    firstName: string;
-    lastName: string;
-    phone: string;
-    email: string;
-    role: string;
-    isPrimary: boolean;
-    existingUserId?: string; 
-    affiliations: string[];
-    responsibilities: string[];
-    preferredContactMethod?: 'Phone' | 'Text' | 'Email';
+  id: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  role: string;
+  isPrimary: boolean;
+  existingUserId?: string;
+  affiliations: string[];
+  responsibilities: string[];
+  preferredContactMethod?: 'Phone' | 'Text' | 'Email';
 }

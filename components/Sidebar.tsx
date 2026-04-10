@@ -1,19 +1,19 @@
-
 import React from 'react';
 import { useMockDB } from '../contexts/MockDatabaseContext';
 import { useNavigation } from '../contexts/NavigationContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { PAGE_GROUPS } from '../constants';
-import { PageGroup, Page } from '../types';
-import { 
-    RhiveLogo, 
-    HomeIcon, 
-    ChartBarIcon, 
-    UserIcon, 
-    CalendarDaysIcon, 
-    MagnifyingGlassIcon, 
-    CalculatorIcon, 
-    PriceTagIcon, 
-    DocumentTextIcon, 
+import { PageGroup } from '../types';
+import {
+    RhiveLogo,
+    HomeIcon,
+    ChartBarIcon,
+    UserIcon,
+    CalendarDaysIcon,
+    MagnifyingGlassIcon,
+    CalculatorIcon,
+    PriceTagIcon,
+    DocumentTextIcon,
     ListBulletIcon,
     BuildingStorefrontIcon,
     MapPinIcon,
@@ -26,12 +26,7 @@ import {
     SearchIcon,
     ClockIcon,
     KeyIcon,
-    ChevronDownIcon,
-    ChevronRightIcon,
-    Squares2x2Icon,
-    IdentificationIcon,
-    ChartPieIcon,
-    ArrowLeftIcon
+    SparklesIcon
 } from './icons';
 import { cn } from '../lib/utils';
 
@@ -47,6 +42,8 @@ const getIconForPage = (id: string) => {
     if (id === 'P-09') return <IdentificationIcon className="h-5 w-5" />;
     if (id === 'P-10' || id === 'P-11') return <DocumentTextIcon className="h-5 w-5" />;
     if (id === 'P-12') return <CalculatorIcon className="h-5 w-5" />;
+    if (id === 'P-00') return <SparklesIcon className="h-5 w-5" />;
+    if (id === 'P-00a') return <BoltIcon className="h-5 w-5" />;
 
     // ADMIN (A-Series)
     if (id === 'A-01') return <HomeIcon className="h-5 w-5" />;
@@ -77,28 +74,23 @@ const getIconForPage = (id: string) => {
     if (id === 'E-25' || id === 'E-24') return <BuildingStorefrontIcon className="h-5 w-5" />;
     if (id === 'E-27') return <CalculatorIcon className="h-5 w-5" />;
     if (id === 'E-38') return <BoltIcon className="h-5 w-5" />;
+    if (id === 'E-39') return <SparklesIcon className="h-5 w-5" />;
     if (id === 'E-29') return <ShieldCheckIcon className="h-5 w-5" />;
     if (id === 'E-32') return <WrenchIcon className="h-5 w-5" />;
     if (id === 'E-34') return <CurrencyDollarIcon className="h-5 w-5" />;
-    if (id === 'E-08') return <UserIcon className="h-5 w-5" />;
-    if (id === 'E-10') return <UserIcon className="h-5 w-5" />;
-    if (id === 'E-12') return <MapPinIcon className="h-5 w-5" />;
-    if (id === 'E-14') return <Squares2x2Icon className="h-5 w-5" />;
-    if (id === 'E-21') return <IdentificationIcon className="h-5 w-5" />;
-    if (id === 'E-22') return <ClockIcon className="h-5 w-5" />;
-    
+
     // CUSTOMER
     if (id === 'C-01') return <HomeIcon className="h-5 w-5" />;
     if (id === 'C-02') return <ListBulletIcon className="h-5 w-5" />;
     if (id === 'C-03') return <BriefcaseIcon className="h-5 w-5" />;
     if (id.startsWith('C-')) return <UserIcon className="h-5 w-5" />;
-    
+
     // CONTRACTOR
     if (id === 'CO-01') return <HomeIcon className="h-5 w-5" />;
     if (id === 'CO-06') return <ListBulletIcon className="h-5 w-5" />;
     if (id === 'CO-08') return <MapPinIcon className="h-5 w-5" />;
     if (id.startsWith('CO-')) return <BuildingStorefrontIcon className="h-5 w-5" />;
-    
+
     // SUPPLIER
     if (id === 'S-04') return <UserIcon className="h-5 w-5" />;
     if (id.startsWith('S-')) return <TruckIcon className="h-5 w-5" />;
@@ -112,13 +104,9 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
     const { currentUser, logout } = useMockDB();
-    const { activePageId, navigateToPage } = useNavigation();
-
-    
-    // State to track expanded categories
-    const [expandedCategories, setExpandedCategories] = React.useState<Record<string, boolean>>({
-        'Stages': true // Keep Stages expanded by default
-    });
+    const { activePageId, setActivePageId } = useNavigation();
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     if (!currentUser) return null;
 
@@ -139,48 +127,40 @@ export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
 
     // Filter groups based on user role and hierarchy
     const sourceGroups = pageGroups || PAGE_GROUPS;
-    const allowedTypes = roleHierarchy[currentUser.role] || [currentUser.role];
-    const userGroups = sourceGroups.filter(group => 
-        group.userType === 'All' || allowedTypes.includes(group.userType)
+    const userGroups = sourceGroups.filter(group =>
+        group.userType === 'All' || group.userType === currentUser.role
     );
 
     return (
-        <aside className="w-64 bg-black/80 border-r border-gray-800 backdrop-blur-md flex flex-col flex-shrink-0 h-full relative z-50">
-            <div className="p-6 border-b border-gray-800 flex items-center justify-center">
-                <RhiveLogo className="h-8" />
+        <aside className={cn(
+            "w-64 border-r backdrop-blur-md flex flex-col flex-shrink-0 h-full relative z-50 transition-colors duration-500",
+            isDark ? "bg-black/80 border-white/5" : "bg-white/80 border-black/5"
+        )}>
+            <div className={cn("p-6 border-b flex items-center justify-center transition-colors duration-500", isDark ? "border-white/5" : "border-black/5")}>
+                <RhiveLogo className={cn("h-8 transition-colors duration-500", isDark ? "text-white" : "text-black")} />
             </div>
 
             <div className="flex-1 overflow-y-auto py-4 scrollbar-hide">
                 {userGroups.map((group, groupIdx) => {
-                    // Group pages by category
-                    const pagesByCategory = group.pages.reduce((acc: Record<string, Page[]>, page) => {
-                        const cat = page.category || 'none';
-                        if (!acc[cat]) acc[cat] = [];
-                        acc[cat].push(page);
-                        return acc;
-                    }, {} as Record<string, Page[]>);
+                    // Group pages by parent
+                    const topLevelPages = group.pages.filter(p => !p.parentId);
+                    const childPages = group.pages.filter(p => p.parentId);
 
                     return (
-                        <div key={groupIdx} className="mb-8 px-4">
-                            {group.label && (
-                                <div className="px-4 mb-3">
-                                    <span className="text-[10px] bg-gray-900/50 border border-gray-800 px-2 py-1 rounded-full text-gray-500 group-hover:text-[#ec028b] group-hover:border-[#ec028b]/30">
-                                        {group.label}
-                                    </span>
-                                </div>
-                            )}
-
+                        <div key={groupIdx} className="mb-6 px-4">
                             <div className="space-y-1">
-                                {(Object.entries(pagesByCategory) as [string, Page[]][]).map(([cat, pages]) => {
-                                    if (cat === 'none') {
-                                        return pages.map(page => (
-                                            <button
-                                                key={page.id}
-                                                onClick={() => navigateToPage(page.id)}
+                                {topLevelPages.map(page => {
+                                    const children = childPages.filter(c => c.parentId === page.id);
+                                    const hasChildren = children.length > 0;
+                                    const isActive = activePageId === page.id || children.some(c => c.id === activePageId);
 
+                                    return (
+                                        <div key={page.id} className="relative group/navitem">
+                                            <button
+                                                onClick={() => setActivePageId(page.id)}
                                                 className={cn(
-                                                    "flex items-center w-full px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
-                                                    activePageId === page.id
+                                                    "flex items-center w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+                                                    isActive
                                                         ? "bg-[#ec028b]/20 text-[#ec028b] border border-[#ec028b]/30"
                                                         : "text-gray-400 hover:bg-gray-800 hover:text-white"
                                                 )}
@@ -188,49 +168,34 @@ export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
                                                 <span className="mr-3 opacity-80">
                                                     {getIconForPage(page.id)}
                                                 </span>
-                                                <span className="truncate">{page.name}</span>
-                                            </button>
-                                        ));
-                                    }
-
-                                    // Render grouped category (e.g., "Stages")
-                                    const isExpanded = expandedCategories[cat];
-                                    const isAnyActive = pages.some(p => p.id === activePageId);
-
-                                    return (
-                                        <div key={cat} className="space-y-1 mt-2">
-                                            <button
-                                                onClick={() => toggleCategory(cat)}
-                                                className={cn(
-                                                    "flex items-center justify-between w-full px-4 py-2 rounded-full text-sm font-bold transition-all",
-                                                    isAnyActive ? "text-white" : "text-gray-500 hover:text-gray-300"
+                                                <span className="truncate flex-1 text-left">{page.name}</span>
+                                                {hasChildren && (
+                                                    <div className="ml-auto opacity-50 group-hover/navitem:opacity-100 transition-opacity">
+                                                        <svg className="w-4 h-4 transform group-hover/navitem:rotate-180 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                        </svg>
+                                                    </div>
                                                 )}
-                                            >
-                                                <div className="flex items-center">
-                                                    <BriefcaseIcon className="h-4 w-4 mr-3 opacity-50" />
-                                                    <span>{cat}</span>
-                                                </div>
-                                                <ChevronRightIcon className={cn(
-                                                    "h-3 w-3 transition-transform duration-300",
-                                                    isExpanded ? "rotate-90" : "rotate-0"
-                                                )} />
                                             </button>
-                                            
-                                            {isExpanded && (
-                                                <div className="ml-4 pl-2 border-l border-gray-800 space-y-1 mt-1">
-                                                    {pages.map(page => (
-                                                        <button
-                                                            key={page.id}
-                                                            onClick={() => navigateToPage(page.id)}
 
+                                            {/* Sub-menu Dropdown / Accordion */}
+                                            {hasChildren && (
+                                                <div className="overflow-hidden transition-all duration-300 max-h-0 group-hover/navitem:max-h-96 opacity-0 group-hover/navitem:opacity-100 pl-8 pt-1 space-y-1">
+                                                    {children.map(child => (
+                                                        <button
+                                                            key={child.id}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setActivePageId(child.id);
+                                                            }}
                                                             className={cn(
-                                                                "flex items-center w-full px-4 py-1.5 rounded-full text-[13px] font-medium transition-all",
-                                                                activePageId === page.id
-                                                                    ? "text-[#ec028b]"
-                                                                    : "text-gray-500 hover:text-gray-200"
+                                                                "flex items-center w-full px-4 py-2 rounded-md text-xs font-medium transition-all duration-200 border-l border-transparent hover:border-[#ec028b]/50",
+                                                                activePageId === child.id
+                                                                    ? "text-[#ec028b] bg-white/5"
+                                                                    : "text-gray-500 hover:text-gray-200 hover:bg-white/5"
                                                             )}
                                                         >
-                                                            <span className="truncate">{page.name}</span>
+                                                            <span className="truncate">{child.name}</span>
                                                         </button>
                                                     ))}
                                                 </div>
@@ -239,22 +204,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ pageGroups }) => {
                                     );
                                 })}
                             </div>
+                            {groupIdx < userGroups.length - 1 && (
+                                <div className="my-4 border-t border-gray-800/50 mx-2" />
+                            )}
                         </div>
                     );
                 })}
             </div>
 
-            <div className="p-4 border-t border-gray-800 bg-black/40">
+            <div className={cn("p-4 border-t transition-colors duration-500", isDark ? "border-white/5 bg-black/40" : "border-black/5 bg-white/40")}>
                 <div className="flex items-center mb-4 px-2">
-                    <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-white font-bold text-xs border border-gray-600">
+                    <div className={cn("w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs border transition-colors", isDark ? "bg-gray-800 text-white border-gray-700" : "bg-gray-100 text-black border-gray-200")}>
                         {currentUser.name.charAt(0)}
                     </div>
                     <div className="ml-3 overflow-hidden">
-                        <p className="text-sm font-medium text-white truncate">{currentUser.name}</p>
+                        <p className={cn("text-sm font-medium truncate transition-colors", isDark ? "text-white" : "text-black")}>{currentUser.name}</p>
                         <p className="text-xs text-[#ec028b] truncate">{currentUser.role}</p>
                     </div>
                 </div>
-                <button 
+                <button
                     onClick={logout}
                     className="w-full py-2 px-4 bg-gray-900 hover:bg-red-900/20 border border-gray-700 hover:border-red-500/50 rounded-full text-gray-400 hover:text-red-400 text-sm transition-all flex items-center justify-center gap-2"
                 >

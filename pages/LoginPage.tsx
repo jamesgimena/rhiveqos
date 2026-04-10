@@ -1,23 +1,20 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
     UserIcon,
     BriefcaseIcon,
     BuildingStorefrontIcon,
     TruckIcon,
     RhiveLogo,
-    ShieldCheckIcon,
-    LockIcon,
-    KeyIcon,
-    XIcon,
-    ArrowRightIcon,
-    EnvelopeIcon,
-    EyeIcon,
-    EyeSlashIcon,
+    FingerPrintIcon,
+    ZohoIcon,
+    GlobeAlt as GlobeAltIcon
 } from '../components/icons';
 import { UserType } from '../types';
 import { cn } from '../lib/utils';
 import { Button } from '../components/ui/button';
+import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface LoginPageProps {
     onLogin: (role: UserType, password?: string, email?: string) => Promise<any>;
@@ -25,13 +22,15 @@ interface LoginPageProps {
 
 // ─── Clipped-corner portal card ──────────────────────────────────────────────
 const PortalButton: React.FC<{
-    role: UserType;
+    role: string;
     icon: React.ReactNode;
     label: string;
     selected: boolean;
     onClick: () => void;
-}> = ({ role, icon, label, selected, onClick }) => {
-    const c = 16;
+    isDark: boolean;
+}> = ({ role, icon, onClick, isDark }) => {
+    const c = 20;
+
     return (
         <div
             onClick={onClick}
@@ -40,25 +39,21 @@ const PortalButton: React.FC<{
                 selected && 'scale-[1.03]'
             )}
         >
-            {/* BG plate */}
+            {/* Glassmorphic Background */}
             <div
                 className={cn(
-                    'absolute inset-0 transition-all duration-500 z-[-2] backdrop-blur-md border',
-                    selected
-                        ? 'bg-rhive-pink/20 border-rhive-pink'
-                        : 'bg-white/5 border-white/10 group-hover:bg-white/12 group-hover:border-rhive-pink/40'
+                    "absolute inset-0 transition-all duration-700 z-[-2] backdrop-blur-md group-hover:backdrop-blur-xl border transition-colors",
+                    isDark
+                        ? "bg-white/5 border-white/10 group-hover:bg-white/15 group-hover:border-rhive-pink/50"
+                        : "bg-black/5 border-black/10 group-hover:bg-black/10 group-hover:border-rhive-pink/50"
                 )}
                 style={{
-                    clipPath: `polygon(${c}px 0, calc(100% - ${c}px) 0, 100% ${c}px, 100% calc(100% - ${c}px), calc(100% - ${c}px) 100%, ${c}px 100%, 0 calc(100% - ${c}px), 0 ${c}px)`,
+                    clipPath: `polygon(${c}px 0, calc(100% - ${c}px) 0, 100% ${c}px, 100% calc(100% - ${c}px), calc(100% - ${c}px) 100%, ${c}px 100%, 0 calc(100% - ${c}px), 0 ${c}px)`
                 }}
             />
             {/* Corner SVG */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible">
-                <g
-                    stroke={selected ? '#ec028b' : '#374151'}
-                    strokeWidth="1.5"
-                    className={cn('transition-all duration-500', selected && 'drop-shadow-[0_0_8px_#ec028b]', !selected && 'group-hover:stroke-rhive-pink group-hover:drop-shadow-[0_0_6px_#ec028b]')}
-                >
+                <g stroke={isDark ? "#374151" : "#D1D5DB"} strokeWidth="1.5" className="transition-all duration-500 group-hover:stroke-rhive-pink group-hover:drop-shadow-[0_0_8px_#ec028b]">
                     <line x1={`${c}px`} y1="0.5px" x2={`calc(100% - ${c}px)`} y2="0.5px" />
                     <line x1={`calc(100% - ${c}px)`} y1="0.5px" x2="calc(100% - 0.5px)" y2={`${c}px`} />
                     <line x1="calc(100% - 0.5px)" y1={`${c}px`} x2="calc(100% - 0.5px)" y2={`calc(100% - ${c}px)`} />
@@ -70,9 +65,17 @@ const PortalButton: React.FC<{
                 </g>
             </svg>
 
-            <div className={cn('relative z-10 flex flex-col items-center gap-2 transition-all duration-300', selected ? 'text-white' : 'text-rhive-pink group-hover:text-white')}>
-                <div className="w-9 h-9 drop-shadow-[0_0_10px_rgba(236,2,139,0.35)]">{icon}</div>
-                <span className="font-extrabold text-[9px] uppercase tracking-[0.3em] font-sans">{label}</span>
+            <div className={cn(
+                "relative z-10 flex flex-col items-center gap-3 transition-all duration-300",
+                isDark ? "text-rhive-pink group-hover:text-white" : "text-rhive-pink group-hover:text-rhive-pink"
+            )}>
+                <div className="w-10 h-10 drop-shadow-[0_0_10px_rgba(236,2,139,0.3)]">
+                    {icon}
+                </div>
+                <span className={cn(
+                    "font-extrabold text-[10px] uppercase tracking-[0.3em] font-sans transition-colors",
+                    isDark ? "text-gray-400 group-hover:text-white" : "text-gray-600 group-hover:text-black"
+                )}>{role}</span>
             </div>
         </div>
     );
@@ -118,75 +121,35 @@ const FloatingInput: React.FC<{
 
 // ─── Main Login Page ──────────────────────────────────────────────────────────
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
+    const { theme } = useTheme();
+    const { t } = useLanguage();
+    const isDark = theme === 'dark';
     const mainC = 40;
 
-    // View state: 'gateway' | 'portal-login' | 'admin-login'
-    const [view, setView] = useState<'gateway' | 'portal-login' | 'admin-login'>('gateway');
-
-    // Portal (Customer / Contractor / Supplier)
-    const [selectedPortalRole, setSelectedPortalRole] = useState<UserType | null>(null);
-    const [portalEmail, setPortalEmail] = useState('');
-    const [portalPassword, setPortalPassword] = useState('');
-    const [showPortalPwd, setShowPortalPwd] = useState(false);
-
-    // Admin (Internal)
-    const [adminPassword, setAdminPassword] = useState('');
-
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
-
-    const showError = (msg: string) => {
-        setError(msg);
-        setTimeout(() => setError(''), 4000);
-    };
-
-    const handlePortalSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!selectedPortalRole || !portalEmail || !portalPassword) return;
-        setLoading(true);
-        const result = await onLogin(selectedPortalRole, portalPassword, portalEmail);
-        setLoading(false);
-        if (result && !result.success) showError(result.error || 'Login failed.');
-    };
-
-    const handleAdminSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!adminPassword) return;
-        setLoading(true);
-        const result = await onLogin('Admin', adminPassword);
-        setLoading(false);
-        if (result && !result.success) showError(result.error || 'Invalid security key.');
-    };
-
-    const resetToGateway = () => {
-        setView('gateway');
-        setSelectedPortalRole(null);
-        setPortalEmail('');
-        setPortalPassword('');
-        setAdminPassword('');
-        setError('');
-    };
-
-    const publicPortals = [
-        { role: 'Customer' as UserType, icon: <UserIcon className="w-full h-full" />, label: 'Customer' },
-        { role: 'Contractor' as UserType, icon: <BuildingStorefrontIcon className="w-full h-full" />, label: 'Contractor' },
-        { role: 'Supplier' as UserType, icon: <TruckIcon className="w-full h-full" />, label: 'Supplier' },
+    const portals = [
+        { role: 'Employee', icon: <BriefcaseIcon className="w-full h-full" />, type: 'Employee' as UserType },
+        { role: 'Customer', icon: <UserIcon className="w-full h-full" />, type: 'Customer' as UserType },
+        { role: 'Contractor', icon: <BuildingStorefrontIcon className="w-full h-full" />, type: 'Contractor' as UserType },
+        { role: 'Supplier', icon: <TruckIcon className="w-full h-full" />, type: 'Supplier' as UserType },
     ];
 
     return (
-        <div className="flex items-center justify-center h-full p-4 font-sans selection:bg-rhive-pink/40">
-            <div className="w-full max-w-xl flex flex-col items-center">
-                <RhiveLogo className="h-20 w-auto mb-12 animate-fade-in" />
+        <div className="flex items-center justify-center p-4 font-sans selection:bg-rhive-pink/40">
+            <div className="w-full max-w-4xl flex flex-col items-center">
+                <RhiveLogo className="h-14 w-auto mb-10 transition-all hover:scale-105" />
 
-                <div className="w-full relative p-10 animate-fade-in isolate">
+                <div className="w-full relative p-12 animate-fade-in isolate text-center">
                     {/* Background Plate */}
                     <div
-                        className="absolute inset-0 bg-black/40 backdrop-blur-md z-[-2]"
+                        className={cn(
+                            "absolute inset-0 backdrop-blur-xl z-[-2] transition-colors duration-500",
+                            isDark ? "bg-black/60 shadow-2xl" : "bg-white/80 shadow-2xl border border-white/20"
+                        )}
                         style={{ clipPath: `polygon(${mainC}px 0, calc(100% - ${mainC}px) 0, 100% ${mainC}px, 100% calc(100% - ${mainC}px), calc(100% - ${mainC}px) 100%, ${mainC}px 100%, 0 calc(100% - ${mainC}px), 0 ${mainC}px)` }}
                     />
 
                     <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible">
-                        <g stroke="#4b5563" strokeWidth="2" className="opacity-80">
+                        <g stroke={isDark ? "#4b5563" : "#D1D5DB"} strokeWidth="1" className="opacity-50 transition-colors">
                             <line x1={`${mainC}px`} y1="0.5px" x2={`calc(100% - ${mainC}px)`} y2="0.5px" />
                             <line x1={`calc(100% - ${mainC}px)`} y1="0.5px" x2="calc(100% - 0.5px)" y2={`${mainC}px`} />
                             <line x1="calc(100% - 0.5px)" y1={`${mainC}px`} x2="calc(100% - 0.5px)" y2={`calc(100% - ${mainC}px)`} />
@@ -200,58 +163,51 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                         <line x1="calc(100% - 0.5px)" y1={`calc(100% - ${mainC}px)`} x2={`calc(100% - ${mainC}px)`} y2="calc(100% - 0.5px)" stroke="#ec028b" strokeWidth="3" className="drop-shadow-[0_0_8px_#ec028b]" />
                     </svg>
 
-                    {/* ── TITLE ── */}
-                    <div className="text-center mb-8 relative z-20">
-                        <h2 className="text-3xl font-black text-white tracking-[0.2em] uppercase mb-2">
-                            {view === 'gateway' && 'QOS Gateway'}
-                            {view === 'portal-login' && 'Portal Login'}
-                            {view === 'admin-login' && 'Internal Access'}
+                    <div className="mb-10 relative z-20">
+                        <h2 className={cn(
+                            "text-4xl font-black tracking-[0.25em] uppercase mb-2",
+                            isDark ? "text-white" : "text-black"
+                        )}>
+                            {t('gateway_title')}
                         </h2>
                         <div className="flex items-center justify-center gap-4">
-                            <div className="h-[1px] w-10 bg-gradient-to-r from-transparent to-gray-700" />
-                            <p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.4em]">
-                                {view === 'gateway' && 'Quantum Operating System v2.5'}
-                                {view === 'portal-login' && 'Secure Client Authentication'}
-                                {view === 'admin-login' && 'Admin Verification Protocol'}
-                            </p>
-                            <div className="h-[1px] w-10 bg-gradient-to-l from-transparent to-gray-700" />
+                            <div className={cn("h-[1px] w-12 bg-gradient-to-r from-transparent", isDark ? "to-gray-700" : "to-gray-300")} />
+                            <p className={cn("text-[10px] font-bold uppercase tracking-[0.4em]", isDark ? "text-gray-500" : "text-gray-400")}>Quantum Operating System v2.0</p>
+                            <div className={cn("h-[1px] w-12 bg-gradient-to-l from-transparent", isDark ? "to-gray-700" : "to-gray-300")} />
                         </div>
                     </div>
 
-                    {/* ════════════════════════════════════════════════════════
-                        VIEW: GATEWAY (choose a portal)
-                    ════════════════════════════════════════════════════════ */}
-                    {view === 'gateway' && (
-                        <div className="space-y-6 relative z-20 animate-fade-in">
-                            <p className="text-center text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 mb-2">Select Your Portal</p>
-                            <div className="grid grid-cols-3 gap-4">
-                                {publicPortals.map((p) => (
-                                    <PortalButton
-                                        key={p.role}
-                                        role={p.role}
-                                        icon={p.icon}
-                                        label={p.label}
-                                        selected={false}
-                                        onClick={() => {
-                                            setSelectedPortalRole(p.role);
-                                            setView('portal-login');
-                                        }}
-                                    />
-                                ))}
-                            </div>
+                    <div className="grid grid-cols-2 gap-8 mb-12 relative z-20">
+                        {portals.map((p) => (
+                            <PortalButton
+                                key={p.role}
+                                role={p.role}
+                                icon={p.icon}
+                                onClick={() => onLogin(p.type)}
+                                isDark={isDark}
+                            />
+                        ))}
+                    </div>
 
-                            <div className="flex items-center gap-4 my-2">
-                                <div className="flex-1 h-[1px] bg-gray-800" />
-                                <span className="text-[9px] text-gray-600 font-bold uppercase tracking-widest">or</span>
-                                <div className="flex-1 h-[1px] bg-gray-800" />
-                            </div>
-
-                            <button
-                                onClick={() => setView('admin-login')}
-                                className="w-full py-4 px-6 bg-gray-900/40 border border-gray-800 text-gray-500 text-[10px] font-bold uppercase tracking-[0.5em] hover:border-rhive-pink/50 hover:text-white transition-all rounded-full flex items-center justify-center gap-3 group"
-                            >
-                                <LockIcon className="w-4 h-4 group-hover:text-rhive-pink transition-colors" />
-                                Internal Admin Access
+                    <div className="relative z-20 max-w-md mx-auto">
+                        <div className={cn("grid grid-cols-2 gap-4 pt-8 border-t", isDark ? "border-gray-800/50" : "border-gray-200")}>
+                            <button className={cn(
+                                "flex items-center justify-center gap-3 p-4 border text-[9px] font-bold uppercase tracking-[0.3em] transition-all rounded-lg group",
+                                isDark
+                                    ? "bg-white/5 border-white/10 text-white/40 hover:border-rhive-pink/50 hover:text-white"
+                                    : "bg-black/5 border-black/10 text-black/40 hover:border-rhive-pink/50 hover:text-black"
+                            )}>
+                                <ZohoIcon className="w-4 h-4 group-hover:text-rhive-pink transition-colors" />
+                                {t('login_zoho')}
+                            </button>
+                            <button className={cn(
+                                "flex items-center justify-center gap-3 p-4 border text-[9px] font-bold uppercase tracking-[0.3em] transition-all rounded-lg group",
+                                isDark
+                                    ? "bg-white/5 border-white/10 text-white/40 hover:border-rhive-pink/50 hover:text-white"
+                                    : "bg-black/5 border-black/10 text-black/40 hover:border-rhive-pink/50 hover:text-black"
+                            )}>
+                                <FingerPrintIcon className="w-4 h-4 group-hover:text-rhive-pink transition-colors" />
+                                {t('login_biometrics')}
                             </button>
 
                             <Button
@@ -399,9 +355,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                         </div>
                     )}
 
-                    <div className="mt-10 text-center relative z-20">
-                        <p className="text-[9px] text-gray-600 font-bold uppercase tracking-[0.5em] opacity-50">
-                            Restricted Access • RHIVE Industries © 2025
+                    <div className="mt-12 text-center relative z-20">
+                        <p className={cn("text-[9px] font-bold uppercase tracking-[0.5em] opacity-50", isDark ? "text-gray-600" : "text-gray-400")}>
+                            {t('restricted_access')}
                         </p>
                     </div>
                 </div>
