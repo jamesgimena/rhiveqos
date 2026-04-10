@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PageContainer from '../components/PageContainer';
 import Card from '../components/Card';
 import Button from '../components/Button';
@@ -53,12 +53,17 @@ const SessionWidget = () => {
 };
 
 // KPI Stat Card Component
-const StatCard = ({ label, value, icon: Icon, trend }: { label: string, value: string, icon: any, trend?: string }) => (
+const StatCard = ({ label, value, icon: Icon, trend, loading }: { label: string, value: string, icon: any, trend?: string, loading?: boolean }) => (
     <div className="bg-gray-900/60 border border-gray-700/50 p-4 rounded-xl flex items-center justify-between backdrop-blur-sm hover:border-[#ec028b]/50 transition-all duration-300 group shadow-lg">
         <div>
             <p className="text-gray-400 text-xs font-bold uppercase tracking-wider group-hover:text-[#ec028b] transition-colors">{label}</p>
-            <p className="text-2xl font-bold text-white mt-1">{value}</p>
-            {trend && <p className="text-xs text-gray-500 mt-1 font-medium">{trend}</p>}
+            {loading ? (
+                <div className="mt-2 h-8 w-16 bg-gray-700/60 rounded animate-pulse" />
+            ) : (
+                <p className="text-2xl font-bold text-white mt-1">{value}</p>
+            )}
+            {trend && !loading && <p className="text-xs text-gray-500 mt-1 font-medium">{trend}</p>}
+            {loading && <div className="mt-1 h-3 w-24 bg-gray-800/60 rounded animate-pulse" />}
         </div>
         <div className="h-12 w-12 rounded-full bg-black/40 border border-gray-700 flex items-center justify-center text-gray-500 group-hover:text-[#ec028b] group-hover:border-[#ec028b]/30 transition-all">
             <Icon className="h-6 w-6" />
@@ -91,12 +96,67 @@ const TaskItem = ({ label, initialStatus, badge }: { label: string, initialStatu
 const EmployeeHomepage: React.FC = () => {
     const page = PAGE_GROUPS.flatMap(g => g.pages).find(p => p.id === 'E-01');
     const { setActivePageId } = useNavigation();
+    const { currentUser } = useMockDB();
 
-    const activity = [
-        { user: 'Michael Robinson', action: 'updated project', target: '1927 Thompson', time: '2m ago' },
-        { user: 'System', action: 'generated report', target: 'Q2 Financial Summary', time: '3h ago' },
-        { user: 'New Lead', action: 'submitted form', target: 'Web Inquiry #442', time: '5h ago' },
-    ];
+    const [activity, setActivity] = useState<{ user: string; action: string; target: string; time: string }[]>([]);
+    const [activityLoading, setActivityLoading] = useState(true);
+
+    const [dashboardStats, setDashboardStats] = useState({
+        activeProjects: 0,
+        activeProjectsTrend: '',
+        tasksDue: 0,
+        tasksOverdue: 0,
+        pendingQuotesCount: 0,
+        pendingQuotesValue: 0,
+        unreadMessages: 0,
+    });
+    const [statsLoading, setStatsLoading] = useState(true);
+
+    const formatQuoteValue = (val: number) => {
+        if (val === 0) return '$0';
+        if (val >= 1000) return `$${(val / 1000).toFixed(1)}k`;
+        return `$${val.toLocaleString()}`;
+    };
+
+    const timeAgo = (dateString: string) => {
+        if (!dateString) return 'Just now';
+        const diff = Date.now() - new Date(dateString).getTime();
+        const minutes = Math.floor(diff / 60000);
+        if (minutes < 1) return 'Just now';
+        if (minutes < 60) return `${minutes}m ago`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours}h ago`;
+        return `${Math.floor(hours / 24)}d ago`;
+    };
+
+    useEffect(() => {
+        const unsubscribe = projectService.subscribeToRecentActivity((projects: any[]) => {
+            const sorted = [...projects].sort((a, b) =>
+                new Date(b.updated_at || b.created_at || 0).getTime() -
+                new Date(a.updated_at || a.created_at || 0).getTime()
+            ).slice(0, 5);
+
+            const mapped = sorted.map((p: any) => ({
+                user: 'New Lead',
+                action: 'submitted project',
+                target: p.name || 'Unnamed Project',
+                time: timeAgo(p.updated_at || p.created_at),
+            }));
+
+            setActivity(mapped);
+            setActivityLoading(false);
+        });
+
+        const unsubStats = dashboardService.subscribeToStats((stats) => {
+            setDashboardStats(stats);
+            setStatsLoading(false);
+        });
+
+        return () => {
+            unsubscribe();
+            unsubStats();
+        };
+    }, []);
 
     const schedule = [
         { time: '09:00 AM', event: 'Team Standup', type: 'Meeting' },
@@ -129,10 +189,33 @@ const EmployeeHomepage: React.FC = () => {
         >
             {/* --- STATS OVERVIEW --- */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <StatCard label="Active Projects" value="12" icon={BriefcaseIcon} trend="+2 this week" />
-                <StatCard label="Tasks Due" value="8" icon={ListBulletIcon} trend="3 overdue" />
-                <StatCard label="Pending Quotes" value="$42.5k" icon={DocumentTextIcon} trend="4 waiting" />
-                <StatCard label="Unread Msgs" value="14" icon={ChatBubbleLeftRightIcon} />
+                <StatCard
+                    label="Active Projects"
+                    value={String(dashboardStats.activeProjects)}
+                    icon={BriefcaseIcon}
+                    trend={dashboardStats.activeProjectsTrend}
+                    loading={statsLoading}
+                />
+                <StatCard
+                    label="Tasks Due"
+                    value={String(dashboardStats.tasksDue)}
+                    icon={ListBulletIcon}
+                    trend={dashboardStats.tasksOverdue > 0 ? `${dashboardStats.tasksOverdue} overdue` : 'All on track'}
+                    loading={statsLoading}
+                />
+                <StatCard
+                    label="Pending Quotes"
+                    value={formatQuoteValue(dashboardStats.pendingQuotesValue)}
+                    icon={DocumentTextIcon}
+                    trend={`${dashboardStats.pendingQuotesCount} waiting`}
+                    loading={statsLoading}
+                />
+                <StatCard
+                    label="Unread Msgs"
+                    value={String(dashboardStats.unreadMessages)}
+                    icon={ChatBubbleLeftRightIcon}
+                    loading={statsLoading}
+                />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -146,7 +229,7 @@ const EmployeeHomepage: React.FC = () => {
                             <Button
                                 variant="secondary"
                                 className="flex-col h-24 hover:bg-gray-900 hover:border-[#ec028b]/50 hover:shadow-[0_0_15px_rgba(236,2,139,0.15)] transition-all bg-black/40 border-gray-700"
-                                onClick={() => setActivePageId('E-CUST-IN')}
+                                onClick={() => setActivePageId('E-02a')}
                             >
                                 <UserIcon className="w-6 h-6 mb-2 text-[#ec028b]" />
                                 <span className="text-xs uppercase font-bold tracking-wide">New Intake</span>
@@ -154,7 +237,7 @@ const EmployeeHomepage: React.FC = () => {
                             <Button
                                 variant="secondary"
                                 className="flex-col h-24 hover:bg-gray-900 hover:border-[#ec028b]/50 hover:shadow-[0_0_15px_rgba(236,2,139,0.15)] transition-all bg-black/40 border-gray-700"
-                                onClick={() => setActivePageId('E-SALES')}
+                                onClick={() => setActivePageId('E-05')}
                             >
                                 <BriefcaseIcon className="w-6 h-6 mb-2 text-[#ec028b]" />
                                 <span className="text-xs uppercase font-bold tracking-wide">Sales Hub</span>
@@ -206,10 +289,25 @@ const EmployeeHomepage: React.FC = () => {
                     </div>
                 </div>
 
-                {/* --- RIGHT COLUMN (Sidebar) --- */}
                 <div className="space-y-6">
                     {/* Session Widget */}
                     <SessionWidget />
+
+                    {/* Admin Insights (Only for Admin/Super Admin) */}
+                    {(currentUser?.role === 'Admin' || currentUser?.role === 'Super Admin') && (
+                        <Card className="bg-[#ec028b]/10 border-[#ec028b]/30 group hover:border-[#ec028b]/60 transition-all cursor-pointer overflow-hidden p-6" onClick={() => setActivePageId('A-01')}>
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center gap-3">
+                                    <ShieldCheckIcon className="w-6 h-6 text-[#ec028b]" />
+                                    <h4 className="font-black text-white uppercase tracking-widest text-sm leading-none">Control Room</h4>
+                                </div>
+                                <ArrowRightIcon className="w-4 h-4 text-[#ec028b] group-hover:translate-x-1 transition-transform" />
+                            </div>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-relaxed">
+                                Access organization-wide oversight protocols and system status.
+                            </p>
+                        </Card>
+                    )}
 
                     {/* Agenda */}
                     <Card title="Today's Schedule">
@@ -225,7 +323,15 @@ const EmployeeHomepage: React.FC = () => {
                                 </div>
                             ))}
                         </div>
-                        <Button variant="secondary" size="sm" className="w-full mt-2">View Full Calendar</Button>
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            className="w-full mt-2 flex items-center justify-center gap-2"
+                            onClick={() => setActivePageId('E-04')}
+                        >
+                            <CalendarDaysIcon className="w-4 h-4" />
+                            View Full Calendar
+                        </Button>
                     </Card>
 
                     {/* Pinned/Weather Widget */}

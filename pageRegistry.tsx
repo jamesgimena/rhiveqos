@@ -39,8 +39,10 @@ import LineItemCatalogPage from './pages/LineItemCatalogPage'; // A-05 / E-19
 import LineItemProfilePage from './pages/LineItemProfilePage'; // A-06 / E-20
 import ContactsVendorsPage from './pages/ContactsVendorsPage'; // E-24
 import ContactVendorProfilePage from './pages/ContactVendorProfilePage'; // E-25
-import CompanyPage from './pages/CompanyPage'; // E-12 (Property Profile)
-import PropertyPage from './pages/PropertyPage'; // E-12
+import CompanyPage from './pages/CompanyPage'; // E-08 (Company Profile)
+import PropertyPage from './pages/PropertyPage'; // E-11 (List)
+import PropertyProfilePage from './pages/PropertyProfilePage'; // E-12 (Details)
+import ProjectProfilePage from './pages/ProjectProfilePage'; // E-15 (Project Profile)
 import WeatherGuideWidgetPage from './pages/WeatherGuideWidgetPage'; // E-38
 import CustomerProjectMapPage from './pages/CustomerProjectMapPage'; // E-06
 import CustomerHomepage from './pages/CustomerHomepage'; // C-01
@@ -52,6 +54,9 @@ import ContractorFinancialsPage from './pages/ContractorFinancialsPage'; // CO-0
 import NewProjectBidsPage from './pages/NewProjectBidsPage'; // CO-05
 import SupplierHomepage from './pages/SupplierHomepage'; // S-01
 import SupplierProfilePage from './pages/SupplierProfilePage'; // S-04
+import UserManagementPage from './pages/UserManagementPage'; // A-02
+import AdminDashboardPage from './pages/AdminDashboardPage'; // A-01
+import RoleManagementPage from './pages/RoleManagementPage'; // SA-01
 import CustomerTrackerPage from './pages/CustomerTrackerPage'; // C-Tracker
 import SimulationGuidePage from './pages/SimulationGuidePage'; // (Simulation)
 import RHIVEBrandingPage from './pages/RHIVEBrandingPage'; // E-39
@@ -106,8 +111,8 @@ export const pageComponentMap: Record<string, React.FC> = {
   'P-13': InsurancePage,
 
   // Admin (Employee World Section 1)
-  'A-01': () => <Placeholder name="Admin Admin Dashboard" />,
-  'A-02': () => <Placeholder name="Admin User Management" />,
+  'A-01': AdminDashboardPage,
+  'A-02': UserManagementPage,
   'A-03': EstimatePricingPage,
   'A-04': EstimateBackendApiPage,
   'A-05': LineItemCatalogPage,
@@ -117,6 +122,7 @@ export const pageComponentMap: Record<string, React.FC> = {
   'E-01': EmployeeHomepage,
   'E-02': GlobalNavCustomerLookup,
   'E-02a': CustomerInputPage,
+  'E-TEMP': PreConversionRecordPage,
   'E-03': () => <Placeholder name="AI ASSISTANT (GLOBAL)" />,
   'E-04': EmployeeTimeoffPage,
   'E-05': EmployeePipelinePage,
@@ -125,10 +131,10 @@ export const pageComponentMap: Record<string, React.FC> = {
   'E-08': CompanyPage,
   'E-09': () => <Placeholder name="MY CONTACTS (CRM)" />,
   'E-10': ContactVendorProfilePage,
-  'E-11': () => <Placeholder name="MY PROPERTIES (CRM)" />,
-  'E-12': PropertyPage,
+  'E-11': PropertyPage,
+  'E-12': PropertyProfilePage,
   'E-14': () => <Placeholder name="PROJECT HUB" />,
-  'E-15': () => <Placeholder name="PROJECT PROFILE" />,
+  'E-15': ProjectProfilePage,
   'E-16': IncomeActionatorPage,
   'E-17': () => <Placeholder name="COMMISSION COMPASS" />,
   'E-18': ReportingPage,
@@ -180,4 +186,6 @@ export const pageComponentMap: Record<string, React.FC> = {
 
   // Simulation
   'E-SIM-GUIDE': SimulationGuidePage,
+  'SA-01': RoleManagementPage,
+  'SA-02': () => <Placeholder name="Global Settings" />,
 };

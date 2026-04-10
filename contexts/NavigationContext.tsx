@@ -1,6 +1,27 @@
 
 import React, { createContext, useContext, useState } from 'react';
 
+// Profile list pages — navigating to these clears the matched selectedId
+const PROFILE_LIST_CLEAR_MAP: Record<string, string[]> = {
+    'E-08': ['selectedAccountId'],
+    'E-10': ['selectedContactId'],
+    'E-11': ['selectedPropertyId'],
+    'E-12': ['selectedPropertyId'],
+    'E-15': ['selectedProjectId'],
+    // Pipeline stage pages — clear selectedProjectId so list view is shown
+    'E-26': ['selectedProjectId'],
+    'E-27': ['selectedProjectId'],
+    'E-28': ['selectedProjectId'],
+    'E-29': ['selectedProjectId'],
+    'E-30': ['selectedProjectId'],
+    'E-31': ['selectedProjectId'],
+    'E-32': ['selectedProjectId'],
+    'E-33': ['selectedProjectId'],
+    'E-34': ['selectedProjectId'],
+    'E-35': ['selectedProjectId'],
+    'E-36': ['selectedProjectId'],
+};
+
 interface NavigationContextType {
     activePageId: string;
     setActivePageId: (id: string) => void;

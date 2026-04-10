@@ -18,7 +18,17 @@ export const DRIP_EDGE_FEET_PER_PIECE = 10;
 // --- CRM NAVIGATION CONSTANTS ---
 
 export const PROJECT_STAGES: ProjectStage[] = [
-    'Lead', 'Estimate', 'Quote', 'Sign & Verify', 'Schedule', 'Pre-Installation', 'Install', 'Punch List', 'Invoicing', 'Completed', 'Past Customer'
+    'Stage 1: LEAD (Intake)',
+    'Stage 2: ESTIMATE (Property Data)',
+    'Stage 3: QUOTE (Pricing Options)',
+    'Stage 4: SIGN & VERIFY (Agreement)',
+    'Stage 5: SCHEDULE (Queue)',
+    'Stage 6: PRE-INSTALLATION (Prep)',
+    'Stage 7: INSTALL (In Progress)',
+    'Stage 8: PUNCH LIST (Quality Control)',
+    'Stage 9: INVOICING (Balance Due)',
+    'Stage 10: COMPLETED (Paid)',
+    'Stage 11: PAST CUSTOMER (Referral System)'
 ];
 
 export const PAGE_GROUPS: PageGroup[] = [
@@ -49,17 +59,86 @@ export const PAGE_GROUPS: PageGroup[] = [
     },
     {
         userType: 'Employee',
+        label: 'CORE COMMAND',
         pages: [
-            { id: 'A-01', name: 'Admin Admin Dashboard', userType: 'Employee' },
-            { id: 'A-02', name: 'Admin User Management', userType: 'Employee' },
-            { id: 'A-03', name: 'Admin ESTIMATE PRICING', userType: 'Employee' },
-            { id: 'A-04', name: 'Admin ESTIMATE BACK END + API', userType: 'Employee' },
-            { id: 'A-05', name: 'Admin LINE ITEM CATALOG', userType: 'Employee' },
-            { id: 'A-06', name: 'Admin LINE ITEM PROFILE', userType: 'Employee' },
+            { id: 'E-01', name: 'Dashboard', userType: 'Employee' },
+            { id: 'E-02', name: 'Customer Lookup', userType: 'Employee' },
+            { id: 'E-02a', name: 'Customer Input', userType: 'Employee' },
+            { id: 'E-03', name: 'AI Assistant', userType: 'Employee' },
+            { id: 'E-04', name: 'Calendar', userType: 'Employee' },
+        ]
+    },
+    {
+        userType: 'Admin',
+        label: 'FINANCIAL CONTROL',
+        pages: [
+            { id: 'E-16', name: 'Income Actionator', userType: 'Admin' },
+            { id: 'E-17', name: 'Commission Compass', userType: 'Admin' },
         ]
     },
     {
         userType: 'Employee',
+        label: 'PIPELINE STAGES',
+        pages: [
+            { id: 'E-05', name: 'Pipeline Overview', userType: 'Employee' },
+            { id: 'E-26', name: 'Stage 1: LEAD (Intake)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-27', name: 'Stage 2: ESTIMATE (Property Data)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-28', name: 'Stage 3: QUOTE (Pricing Options)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-29', name: 'Stage 4: SIGN & VERIFY (Agreement)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-30', name: 'Stage 5: SCHEDULE (Queue)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-31', name: 'Stage 6: PRE-INSTALLATION (Prep)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-32', name: 'Stage 7: INSTALL (In Progress)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-33', name: 'Stage 8: PUNCH LIST (Quality Control)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-34', name: 'Stage 9: INVOICING (Balance Due)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-36', name: 'Stage 10: COMPLETED (Paid)', userType: 'Employee', category: 'Stages' },
+            { id: 'E-37', name: 'Stage 11: PAST CUSTOMER (Referral System)', userType: 'Employee', category: 'Stages' },
+        ]
+    },
+    {
+        userType: 'Employee',
+        label: 'RECORD PROFILES',
+        pages: [
+            { id: 'E-08', name: 'Account', userType: 'Employee' },
+            { id: 'E-10', name: 'Contact', userType: 'Employee' },
+            { id: 'E-12', name: 'Property', userType: 'Employee' },
+            { id: 'E-15', name: 'Project', userType: 'Employee' },
+            { id: 'E-25', name: 'Vendor', userType: 'Employee' },
+        ]
+    },
+    {
+        userType: 'Employee',
+        label: 'TOOLS & SUPPORT',
+        pages: [
+            { id: 'E-06', name: 'Project Map', userType: 'Employee' },
+            { id: 'E-14', name: 'Project Hub', userType: 'Employee' },
+            { id: 'E-23', name: 'Quote Builder', userType: 'Employee' },
+            { id: 'E-38', name: 'Weather Guide', userType: 'Employee' },
+            { id: 'E-21', name: 'My Info', userType: 'Employee' },
+            { id: 'E-22', name: 'Timeoff Request', userType: 'Employee' },
+        ]
+    },
+    {
+        userType: 'Admin',
+        label: 'MANAGEMENT TOOLS',
+        pages: [
+            { id: 'E-18', name: 'Report Builder', userType: 'Admin' },
+            { id: 'E-19', name: 'Line Item Catalog', userType: 'Admin' },
+        ]
+    },
+    {
+        userType: 'Admin',
+        label: 'ADMINISTRATION',
+        pages: [
+            { id: 'A-01', name: 'Admin Dashboard', userType: 'Admin' },
+            { id: 'A-02', name: 'User Management', userType: 'Admin' },
+            { id: 'A-03', name: 'Estimate Pricing', userType: 'Admin' },
+            { id: 'A-04', name: 'Backend & API', userType: 'Admin' },
+            { id: 'A-05', name: 'Line Item Master', userType: 'Admin' },
+        ]
+    },
+    {
+        userType: 'Super Admin',
+        label: 'SYSTEM CONTROL',
         pages: [
             { id: 'E-01', name: 'Employee Dashboard', userType: 'Employee' },
             { id: 'E-02', name: 'GLOBAL NAV - CUSTOMER LOOKUP', userType: 'Employee' },
