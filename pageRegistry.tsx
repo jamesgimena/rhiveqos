@@ -60,6 +60,8 @@ import RoleManagementPage from './pages/RoleManagementPage'; // SA-01
 import CustomerTrackerPage from './pages/CustomerTrackerPage'; // C-Tracker
 import SimulationGuidePage from './pages/SimulationGuidePage';
 import PreConversionRecordPage from './pages/PreConversionRecordPage'; // (Simulation)
+import InsurancePage from './pages/InsurancePage'; // P-13
+import RHIVEBrandingPage from './pages/RHIVEBrandingPage'; // E-39
 
 // Specific stage pages
 import LeadPage from './pages/LeadPage'; // E-26
