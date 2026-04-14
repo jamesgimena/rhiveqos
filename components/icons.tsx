@@ -241,7 +241,6 @@ export const EnvelopeIcon2 = I;
 export const ShareIcon2 = I;
 export const PaperAirplane = I;
 export const LinkIcon2 = I;
-export const GlobeAlt = I;
 export const Sparkles2 = I;
 export const FireIcon2 = I;
 export const LightBulb = I;

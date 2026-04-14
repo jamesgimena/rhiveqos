@@ -1,10 +1,10 @@
 {
-  "name": "rhive---estimate-1.0003",
+  "name": "rhive-home",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 3002",
+    "dev": "vite --port 3000",
     "build": "vite build",
     "preview": "vite preview --port 8002 "
   },
@@ -22,6 +22,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
     "playwright": "^1.58.0",
