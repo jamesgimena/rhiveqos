@@ -16,24 +16,42 @@ const firebaseConfig = {
     measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
-const app: FirebaseApp = initializeApp(firebaseConfig);
+const isMissingConfig = !firebaseConfig.apiKey || !firebaseConfig.projectId;
 
-// Initialize Firebase services
+if (isMissingConfig) {
+    console.warn(
+        '[RHIVE] Firebase env vars not set. Create a .env file with your VITE_FIREBASE_* keys. ' +
+        'The app will run in offline/demo mode.'
+    );
+}
+
+// Initialize Firebase (safely)
+let app: FirebaseApp;
 let analytics: Analytics | null = null;
 let auth: Auth;
 let db: Firestore;
 let storage: FirebaseStorage;
 
-// Analytics only works in browser environment
-if (typeof window !== 'undefined') {
-    analytics = getAnalytics(app);
-}
+try {
+    app = initializeApp(firebaseConfig);
 
-// Initialize other services
-auth = getAuth(app);
-db = getFirestore(app);
-storage = getStorage(app);
+    // Analytics only works in browser environment
+    if (typeof window !== 'undefined' && !isMissingConfig) {
+        try { analytics = getAnalytics(app); } catch { /* analytics optional */ }
+    }
+
+    auth = getAuth(app);
+    db = getFirestore(app);
+    storage = getStorage(app);
+} catch (e) {
+    console.error('[RHIVE] Firebase initialization failed. Check your .env file.', e);
+    // Initialize with a dummy app so imports don't break
+    app = initializeApp({ apiKey: 'MISSING', projectId: 'rhive-demo' }, 'demo');
+    auth = getAuth(app);
+    db = getFirestore(app);
+    storage = getStorage(app);
+}
 
 // Export initialized services
 export { app, analytics, auth, db, storage };
+
