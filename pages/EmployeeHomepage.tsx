@@ -813,19 +813,9 @@ const EmployeeHomepage: React.FC = () => {
 
                         <Card title="My Tasks" className="h-full">
                             <ul className="space-y-3">
-                                <li className="flex items-center group cursor-pointer">
-                                    <input type="checkbox" className="h-4 w-4 rounded bg-black border-gray-600 text-[#ec028b] focus:ring-[#ec028b] cursor-pointer" />
-                                    <label className="ml-3 text-gray-300 group-hover:text-white transition-colors text-sm">Follow up with 1927 Thompson</label>
-                                    <span className="ml-auto text-xs text-white bg-red-900/50 border border-red-900 px-2 py-0.5 rounded">Overdue</span>
-                                </li>
-                                <li className="flex items-center group cursor-pointer">
-                                    <input type="checkbox" className="h-4 w-4 rounded bg-black border-gray-600 text-[#ec028b] focus:ring-[#ec028b] cursor-pointer" />
-                                    <label className="ml-3 text-gray-300 group-hover:text-white transition-colors text-sm">Submit Q2 Expense Report</label>
-                                </li>
-                                <li className="flex items-center group cursor-pointer">
-                                    <input type="checkbox" className="h-4 w-4 rounded bg-black border-gray-600 text-[#ec028b] focus:ring-[#ec028b] cursor-pointer" />
-                                    <label className="ml-3 text-gray-300 group-hover:text-white transition-colors text-sm">Finalize material order</label>
-                                </li>
+                                <TaskItem label="Follow up with 1927 Thompson" initialStatus={false} badge="Overdue" />
+                                <TaskItem label="Submit Q2 Expense Report" initialStatus={false} />
+                                <TaskItem label="Finalize material order" initialStatus={true} />
                             </ul>
                         </Card>
                     </div>
