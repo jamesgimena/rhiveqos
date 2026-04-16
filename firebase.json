@@ -1,7 +1,7 @@
 {
   "apphosting": {
     "backendId": "rhiveqos",
-    "rootDir": "../rhiveqos",
+    "rootDir": "./",
     "ignore": [
       "node_modules",
       ".git",
