@@ -1,8 +1,7 @@
 {
   "apphosting": [
     {
-      "backendId": "rhiveqos",
-      "target": "rhiveqos",
+      "backendId": "rhive-os",
       "public": "dist",
       "rootDir": "./",
       "ignore": [
@@ -19,17 +18,6 @@
         }
       ],
       "alwaysDeployFromSource": true
-    },
-    {
-      "backendId": "rhive-os",
-      "rootDir": "/",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "functions"
-      ]
     }
   ]
 }
